@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MailGenius – AI Email Generator Powered by Gemini</title>
+  <meta name="description" content="Generate professional, persuasive, and personalized emails in seconds using Google Gemini AI. MailGenius is your intelligent email writing assistant." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><circle cx='24' cy='24' r='24' fill='%238B5CF6'/><path d='M24 10L26.5 18H35L28.5 23L31 31L24 26L17 31L19.5 23L13 18H21.5L24 10Z' fill='white'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Animated background particles -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- API Key Modal -->
+  <div id="api-key-modal" class="modal-overlay active">
+    <div class="modal-card" id="api-modal-card">
+      <div class="modal-glow"></div>
+      <div class="modal-icon">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="24" fill="url(#gemini-grad)"/>
+          <defs>
+            <linearGradient id="gemini-grad" x1="0" y1="0" x2="48" y2="48">
+              <stop offset="0%" stop-color="#8B5CF6"/>
+              <stop offset="100%" stop-color="#06B6D4"/>
+            </linearGradient>
+          </defs>
+          <path d="M24 10L26.5 18H35L28.5 23L31 31L24 26L17 31L19.5 23L13 18H21.5L24 10Z" fill="white" opacity="0.9"/>
+        </svg>
+      </div>
+      <h2 class="modal-title">Welcome to <span class="gradient-text">MailGenius</span></h2>
+      <p class="modal-subtitle">Enter your Google Gemini API key to unlock AI-powered email generation</p>
+      <form id="api-key-form" class="input-group" onsubmit="return false;">
+        <label for="api-key-input" class="input-label">Gemini API Key</label>
+        <div class="input-wrapper">
+          <input
+            type="password"
+            id="api-key-input"
+            class="text-input"
+            placeholder="AIzaSy..."
+            autocomplete="current-password"
+          />
+          <button type="button" class="toggle-visibility" id="toggle-key-visibility" title="Show/Hide key">
+            <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </form>
+      <p class="modal-hint">
+        🔒 Your key stays in your browser and is never sent to our servers.
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="link">Get a free API key →</a>
+      </p>
+      <button id="save-api-key-btn" class="btn btn-primary btn-full">
+        <span class="btn-text">Launch MailGenius</span>
+        <span class="btn-shine"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" class="app hidden">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
+              <circle cx="24" cy="24" r="24" fill="url(#logo-grad)"/>
+              <defs>
+                <linearGradient id="logo-grad" x1="0" y1="0" x2="48" y2="48">
+                  <stop offset="0%" stop-color="#8B5CF6"/>
+                  <stop offset="100%" stop-color="#06B6D4"/>
+                </linearGradient>
+              </defs>
+              <path d="M24 10L26.5 18H35L28.5 23L31 31L24 26L17 31L19.5 23L13 18H21.5L24 10Z" fill="white" opacity="0.9"/>
+            </svg>
+          </div>
+          <span class="logo-text">Mail<span class="gradient-text">Genius</span></span>
+        </div>
+        <span class="powered-badge">Powered by Gemini</span>
+      </div>
+      <div class="header-right">
+        <div class="model-selector-wrap">
+          <label class="model-label">Model</label>
+          <select id="model-select" class="model-select">
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+            <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+          </select>
+        </div>
+        <button id="change-key-btn" class="btn btn-ghost" title="Change API Key">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          API Key
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Layout -->
+    <main class="main-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <p class="sidebar-label">Email Type</p>
+          <div class="email-type-grid" id="email-type-grid">
+            <button class="type-btn active" data-type="professional" data-prompt="Write a professional business email">
+              <span class="type-icon">💼</span>
+              <span class="type-name">Professional</span>
+            </button>
+            <button class="type-btn" data-type="sales" data-prompt="Write a persuasive sales outreach email">
+              <span class="type-icon">📈</span>
+              <span class="type-name">Sales</span>
+            </button>
+            <button class="type-btn" data-type="follow-up" data-prompt="Write a follow-up email after a meeting or conversation">
+              <span class="type-icon">🔄</span>
+              <span class="type-name">Follow-up</span>
+            </button>
+            <button class="type-btn" data-type="apology" data-prompt="Write a sincere apology email">
+              <span class="type-icon">🙏</span>
+              <span class="type-name">Apology</span>
+            </button>
+            <button class="type-btn" data-type="cold-outreach" data-prompt="Write a compelling cold outreach networking email">
+              <span class="type-icon">🤝</span>
+              <span class="type-name">Cold Outreach</span>
+            </button>
+            <button class="type-btn" data-type="newsletter" data-prompt="Write an engaging marketing newsletter email">
+              <span class="type-icon">📰</span>
+              <span class="type-name">Newsletter</span>
+            </button>
+            <button class="type-btn" data-type="thank-you" data-prompt="Write a heartfelt thank you email">
+              <span class="type-icon">💝</span>
+              <span class="type-name">Thank You</span>
+            </button>
+            <button class="type-btn" data-type="feedback" data-prompt="Write a polite feedback request email">
+              <span class="type-icon">📋</span>
+              <span class="type-name">Feedback</span>
+            </button>
+            <button class="type-btn" data-type="complaint" data-prompt="Write a firm but professional complaint email">
+              <span class="type-icon">⚡</span>
+              <span class="type-name">Complaint</span>
+            </button>
+            <button class="type-btn" data-type="invitation" data-prompt="Write an engaging event invitation email">
+              <span class="type-icon">🎉</span>
+              <span class="type-name">Invitation</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <p class="sidebar-label">Quick Templates</p>
+          <div class="template-list">
+            <button class="template-item" id="tpl-job-application">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              Job Application
+            </button>
+            <button class="template-item" id="tpl-partnership">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Partnership Proposal
+            </button>
+            <button class="template-item" id="tpl-meeting-request">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Meeting Request
+            </button>
+            <button class="template-item" id="tpl-product-launch">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+              Product Launch
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <p class="sidebar-label">History</p>
+          <div id="history-list" class="history-list">
+            <p class="history-empty">Generated emails will appear here</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center: Editor -->
+      <section class="editor-panel">
+        <div class="panel-header">
+          <h1 class="panel-title">Compose with AI</h1>
+          <div class="panel-actions">
+            <button class="btn btn-ghost btn-sm" id="clear-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.48"/></svg>
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="sender-name">Your Name</label>
+              <input type="text" id="sender-name" class="form-input" placeholder="John Smith" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="recipient-name">Recipient Name</label>
+              <input type="text" id="recipient-name" class="form-input" placeholder="Jane Doe" />
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="recipient-role">Recipient's Role/Company</label>
+              <input type="text" id="recipient-role" class="form-input" placeholder="CEO at Acme Corp" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="subject-line">Subject (optional)</label>
+              <input type="text" id="subject-line" class="form-input" placeholder="Leave blank to auto-generate" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email-context">Email Purpose & Context</label>
+            <textarea
+              id="email-context"
+              class="form-textarea"
+              rows="4"
+              placeholder="Describe the purpose of the email. E.g., 'I want to follow up on the proposal I sent last week and ask for a decision by Friday. Mention that we can offer a 10% discount if they sign this month.'"
+            ></textarea>
+          </div>
+
+          <div class="form-row-3">
+            <div class="form-group">
+              <label class="form-label">Tone</label>
+              <div class="tone-selector" id="tone-selector">
+                <button class="tone-btn active" data-tone="professional">Professional</button>
+                <button class="tone-btn" data-tone="friendly">Friendly</button>
+                <button class="tone-btn" data-tone="persuasive">Persuasive</button>
+                <button class="tone-btn" data-tone="formal">Formal</button>
+                <button class="tone-btn" data-tone="casual">Casual</button>
+                <button class="tone-btn" data-tone="urgent">Urgent</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Length</label>
+              <div class="length-selector" id="length-selector">
+                <button class="length-btn" data-length="brief">Brief</button>
+                <button class="length-btn active" data-length="standard">Standard</button>
+                <button class="length-btn" data-length="detailed">Detailed</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Language</label>
+              <select id="language-select" class="form-select">
+                <option value="English">English</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+                <option value="Portuguese">Portuguese</option>
+                <option value="Italian">Italian</option>
+                <option value="Dutch">Dutch</option>
+                <option value="Japanese">Japanese</option>
+                <option value="Chinese">Chinese (Simplified)</option>
+                <option value="Korean">Korean</option>
+                <option value="Arabic">Arabic</option>
+                <option value="Hindi">Hindi</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Additional Options</label>
+            <div class="checkbox-row">
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-cta" class="checkbox-input" checked />
+                <span class="checkbox-custom"></span>
+                Include call-to-action
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-signature" class="checkbox-input" checked />
+                <span class="checkbox-custom"></span>
+                Add signature
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-subject" class="checkbox-input" checked />
+                <span class="checkbox-custom"></span>
+                Generate subject line
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-emoji" class="checkbox-input" />
+                <span class="checkbox-custom"></span>
+                Use emojis
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <button id="generate-btn" class="btn btn-generate">
+          <span class="generate-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+          </span>
+          <span id="generate-btn-text">Generate Email</span>
+          <span class="btn-shine"></span>
+        </button>
+      </section>
+
+      <!-- Right: Output Panel -->
+      <section class="output-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Generated Email</h2>
+          <div class="panel-actions" id="output-actions">
+            <button class="btn btn-ghost btn-sm" id="copy-btn" disabled>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy
+            </button>
+            <button class="btn btn-ghost btn-sm" id="regenerate-btn" disabled>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Regenerate
+            </button>
+            <button class="btn btn-ghost btn-sm" id="improve-btn" disabled>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              Improve
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state">
+          <div class="empty-icon">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+              <circle cx="32" cy="32" r="32" fill="url(#empty-grad)" opacity="0.15"/>
+              <defs>
+                <linearGradient id="empty-grad" x1="0" y1="0" x2="64" y2="64">
+                  <stop offset="0%" stop-color="#8B5CF6"/>
+                  <stop offset="100%" stop-color="#06B6D4"/>
+                </linearGradient>
+              </defs>
+              <path d="M16 20h32v24H16z" stroke="url(#empty-stroke)" stroke-width="2" fill="none" rx="2"/>
+              <path d="M16 20l16 14 16-14" stroke="url(#empty-stroke2)" stroke-width="2" fill="none"/>
+              <defs>
+                <linearGradient id="empty-stroke" x1="16" y1="20" x2="48" y2="44">
+                  <stop offset="0%" stop-color="#8B5CF6"/>
+                  <stop offset="100%" stop-color="#06B6D4"/>
+                </linearGradient>
+                <linearGradient id="empty-stroke2" x1="16" y1="20" x2="48" y2="34">
+                  <stop offset="0%" stop-color="#8B5CF6"/>
+                  <stop offset="100%" stop-color="#06B6D4"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <p class="empty-title">Your AI-crafted email will appear here</p>
+          <p class="empty-subtitle">Fill in the form and click <strong>Generate Email</strong> to get started</p>
+          <div class="empty-features">
+            <span class="feature-pill">✨ Context-aware</span>
+            <span class="feature-pill">🎯 Tone control</span>
+            <span class="feature-pill">🌍 12 languages</span>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-state hidden">
+          <div class="loading-orb">
+            <div class="orb-ring ring-1"></div>
+            <div class="orb-ring ring-2"></div>
+            <div class="orb-ring ring-3"></div>
+            <div class="orb-core">
+              <svg width="24" height="24" viewBox="0 0 48 48" fill="none">
+                <path d="M24 10L26.5 18H35L28.5 23L31 31L24 26L17 31L19.5 23L13 18H21.5L24 10Z" fill="url(#orb-grad)"/>
+                <defs>
+                  <linearGradient id="orb-grad" x1="13" y1="10" x2="35" y2="31">
+                    <stop offset="0%" stop-color="#8B5CF6"/>
+                    <stop offset="100%" stop-color="#06B6D4"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+          </div>
+          <p class="loading-text">Crafting your perfect email...</p>
+          <div class="loading-steps">
+            <span class="loading-step active" id="step-1">Analyzing context</span>
+            <span class="loading-step" id="step-2">Crafting content</span>
+            <span class="loading-step" id="step-3">Polishing tone</span>
+          </div>
+        </div>
+
+        <!-- Output Content -->
+        <div id="output-content" class="output-content hidden">
+          <div class="subject-badge-wrap" id="subject-badge-wrap">
+            <span class="subject-label">Subject:</span>
+            <span id="output-subject" class="subject-text"></span>
+            <button class="copy-subject-btn" id="copy-subject-btn" title="Copy subject">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+          <div id="output-email" class="output-email" contenteditable="true" spellcheck="true"></div>
+
+          <div class="output-meta">
+            <div class="meta-stats">
+              <span class="meta-stat" id="word-count">0 words</span>
+              <span class="meta-divider">·</span>
+              <span class="meta-stat" id="char-count">0 chars</span>
+              <span class="meta-divider">·</span>
+              <span class="meta-stat" id="read-time">~0 min read</span>
+            </div>
+            <div class="sentiment-badge" id="sentiment-badge"></div>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="error-state hidden">
+          <div class="error-icon">⚠️</div>
+          <p class="error-title">Generation Failed</p>
+          <p class="error-message" id="error-message">Something went wrong. Please check your API key and try again.</p>
+          <button class="btn btn-ghost" id="retry-btn">Try Again</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Improve Modal -->
+    <div id="improve-modal" class="modal-overlay">
+      <div class="modal-card modal-sm">
+        <h3 class="modal-title-sm">Improve Email</h3>
+        <p class="modal-subtitle">Describe how you'd like to improve this email</p>
+        <textarea id="improve-instructions" class="form-textarea" rows="3" placeholder="E.g., Make it more concise, add urgency, fix the tone, translate to formal English..."></textarea>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" id="improve-cancel-btn">Cancel</button>
+          <button class="btn btn-primary" id="improve-submit-btn">Apply Improvements</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+      <span id="toast-message"></span>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
