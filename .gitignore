@@ -1,1 +1,10 @@
-.env    
+# Environment variables
+.env
+js/config.js
+
+# Dependencies
+node_modules/
+
+# OS metadata
+.DS_Store
+Thumbs.db

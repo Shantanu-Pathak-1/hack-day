@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <script>
+    (function () {
+      const theme = localStorage.getItem('theme') || 'dark';
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Ethrix Mail Gen</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <meta name="description" content="Sign in or use demo mode to access the Ethrix Mail Gen AI email generator." />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'space': 'rgb(var(--background-rgb))',
+            'space-light': 'rgb(var(--muted-rgb))',
+            'space-card': 'rgb(var(--card-rgb))',
+            'neon': 'rgb(var(--primary-rgb))',
+            'neon-dim': 'rgb(var(--ring-rgb))',
+            'neon-glow': 'rgb(var(--accent-rgb))',
+            'neon-border': 'rgb(var(--border-rgb))',
+            'purple-glow': 'rgb(var(--chart-3-rgb))',
+            background: 'rgb(var(--background-rgb))',
+            foreground: 'rgb(var(--foreground-rgb))',
+            card: 'rgb(var(--card-rgb))',
+            border: 'rgb(var(--border-rgb))',
+            primary: 'rgb(var(--primary-rgb))',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            display: ['Space Grotesk', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* RGB variables for theme support */
+    :root {
+      --background-rgb: 245, 247, 251;
+      --foreground-rgb: 15, 23, 42;
+      --card-rgb: 255, 255, 255;
+      --border-rgb: 226, 232, 240;
+      --primary-rgb: 109, 40, 217; /* purple theme accent: #6d28d9 */
+      --muted-rgb: 248, 250, 252;
+      --accent-rgb: 239, 246, 255;
+      --ring-rgb: 109, 40, 217;
+      --chart-3-rgb: 124, 58, 237;
+    }
+
+    .dark {
+      --background-rgb: 7, 17, 31; /* background from landing.html */
+      --foreground-rgb: 248, 250, 252;
+      --card-rgb: 15, 23, 42;
+      --border-rgb: 30, 41, 59;
+      --primary-rgb: 139, 92, 246; /* purple theme accent: #8b5cf6 */
+      --muted-rgb: 30, 41, 59;
+      --accent-rgb: 30, 41, 59;
+      --ring-rgb: 139, 92, 246;
+      --chart-3-rgb: 192, 132, 252;
+    }
+
+    html,
+    body {
+      overflow: hidden;
+      height: 100%;
+    }
+
+    body {
+      background-color: rgb(var(--background-rgb));
+      color: rgb(var(--foreground-rgb));
+      font-family: 'Inter', sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .btn-solid {
+      background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.95), rgba(var(--chart-3-rgb), 0.95));
+      color: white;
+      transition: all 0.25s ease-in-out;
+      box-shadow: 0 10px 20px rgba(var(--primary-rgb), 0.15);
+    }
+
+    .btn-solid:hover {
+      box-shadow: 0 14px 28px rgba(var(--primary-rgb), 0.25);
+      transform: translateY(-1px);
+    }
+
+    /* Theme Toggle Switch */
+    #theme-toggle-button {
+      font-size: 11px;
+      position: relative;
+      display: inline-block;
+      width: 7em;
+      cursor: pointer;
+    }
+
+    #toggle {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    #container,
+    #patches,
+    #stars,
+    #button,
+    #sun,
+    #moon,
+    #cloud {
+      transition-property: all;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 0.25s;
+    }
+
+    #toggle:checked+svg #container {
+      fill: #2b4360;
+    }
+
+    #toggle:checked+svg #button {
+      transform: translate(28px, 2.333px);
+    }
+
+    #sun {
+      opacity: 1;
+    }
+
+    #toggle:checked+svg #sun {
+      opacity: 0;
+    }
+
+    #moon {
+      opacity: 0;
+    }
+
+    #toggle:checked+svg #moon {
+      opacity: 1;
+    }
+
+    #cloud {
+      opacity: 1;
+    }
+
+    #toggle:checked+svg #cloud {
+      opacity: 0;
+    }
+
+    #stars {
+      opacity: 0;
+    }
+
+    #toggle:checked+svg #stars {
+      opacity: 1;
+    }
+
+    /* Preloader & Loader Styles */
+    .loader {
+      --path: #cbd5e1;
+      --dot: #5628ee;
+      --duration: 3s;
+      width: 44px;
+      height: 44px;
+      position: relative;
+      display: inline-block;
+      margin: 0 16px;
+    }
+
+    .dark .loader {
+      --path: #1e293b;
+      --dot: #a855f7;
+    }
+
+    .loader:before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      position: absolute;
+      display: block;
+      background: var(--dot);
+      top: 37px;
+      left: 19px;
+      transform: translate(-18px, -18px);
+      animation: dotRect var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
+    }
+
+    .loader svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .loader svg rect,
+    .loader svg polygon,
+    .loader svg circle {
+      fill: none;
+      stroke: var(--path);
+      stroke-width: 10px;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+
+    .loader svg polygon {
+      stroke-dasharray: 145 76 145 76;
+      stroke-dashoffset: 0;
+      animation: pathTriangle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
+    }
+
+    .loader svg rect {
+      stroke-dasharray: 192 64 192 64;
+      stroke-dashoffset: 0;
+      animation: pathRect 3s cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
+    }
+
+    .loader svg circle {
+      stroke-dasharray: 150 50 150 50;
+      stroke-dashoffset: 75;
+      animation: pathCircle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
+    }
+
+    .loader.triangle {
+      width: 48px;
+    }
+
+    .loader.triangle:before {
+      left: 21px;
+      transform: translate(-10px, -18px);
+      animation: dotTriangle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
+    }
+
+    @keyframes pathTriangle {
+      33% { stroke-dashoffset: 74; }
+      66% { stroke-dashoffset: 147; }
+      100% { stroke-dashoffset: 221; }
+    }
+
+    @keyframes dotTriangle {
+      33% { transform: translate(0, 0); }
+      66% { transform: translate(10px, -18px); }
+      100% { transform: translate(-10px, -18px); }
+    }
+
+    @keyframes pathRect {
+      25% { stroke-dashoffset: 64; }
+      50% { stroke-dashoffset: 128; }
+      75% { stroke-dashoffset: 192; }
+      100% { stroke-dashoffset: 256; }
+    }
+
+    @keyframes dotRect {
+      25% { transform: translate(0, 0); }
+      50% { transform: translate(18px, -18px); }
+      75% { transform: translate(0, -36px); }
+      100% { transform: translate(-18px, -18px); }
+    }
+
+    @keyframes pathCircle {
+      25% { stroke-dashoffset: 125; }
+      50% { stroke-dashoffset: 175; }
+      75% { stroke-dashoffset: 225; }
+      100% { stroke-dashoffset: 275; }
+    }
+  </style>
+</head>
+
+<body
+  class="h-screen w-full flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-slate-950 dark:to-indigo-950/20 p-4 relative overflow-hidden">
+
+  <!-- Preloader Page Loading Screen -->
+  <div id="page-preloader" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white dark:bg-slate-950 transition-opacity duration-300 ease-out">
+    <div class="flex items-center justify-center">
+      <div class="loader">
+        <svg viewBox="0 0 80 80">
+          <circle r="32" cy="40" cx="40" id="test"></circle>
+        </svg>
+      </div>
+      <div class="loader triangle">
+        <svg viewBox="0 0 86 80">
+          <polygon points="43 8 79 72 7 72"></polygon>
+        </svg>
+      </div>
+      <div class="loader">
+        <svg viewBox="0 0 80 80">
+          <rect height="64" width="64" y="8" x="8"></rect>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Navigation Bar (Ensures same-line horizontal alignment) -->
+  <header class="fixed top-4 left-4 right-4 h-12 flex items-center justify-between z-50 pointer-events-none">
+    <!-- Back to Landing Page Option -->
+    <a href="index.html"
+      class="pointer-events-auto py-2 px-3.5 rounded-full border border-slate-200/80 dark:border-white/5 bg-white/80 dark:bg-slate-900/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-all shadow-md backdrop-blur-md flex items-center justify-center gap-2 text-xs font-bold font-mono"
+      title="Back to Landing Page">
+      <i class="fa-solid fa-arrow-left-long"></i> Back to Home
+    </a>
+
+    <!-- Theme Toggle -->
+    <div class="pointer-events-auto flex items-center justify-center">
+      <label id="theme-toggle-button">
+        <input type="checkbox" id="toggle" onchange="toggleDarkMode()">
+        <svg viewBox="0 0 69.667 44" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"
+          class="w-[70px] h-[44px]">
+          <g transform="translate(3.5 3.5)" data-name="Component 15 – 1" id="Component_15_1">
+            <g filter="url(#container)" transform="matrix(1, 0, 0, 1, -3.5, -3.5)">
+              <rect fill="#83cbd8" transform="translate(3.5 3.5)" rx="17.5" height="35" width="60.667"
+                data-name="container" id="container"></rect>
+            </g>
+            <g transform="translate(2.333 2.333)" id="button">
+              <g data-name="sun" id="sun">
+                <g filter="url(#sun-outer)" transform="matrix(1, 0, 0, 1, -5.83, -5.83)">
+                  <circle fill="#f8e664" transform="translate(5.83 5.83)" r="15.167" cy="15.167" cx="15.167"
+                    data-name="sun-outer" id="sun-outer-2"></circle>
+                </g>
+                <g filter="url(#sun)" transform="matrix(1, 0, 0, 1, -5.83, -5.83)">
+                  <path fill="rgba(246,254,247,0.29)" transform="translate(9.33 9.33)"
+                    d="M11.667,0A11.667,11.667,0,1,1,0,11.667,11.667,0,0,1,11.667,0Z" data-name="sun" id="sun-3">
+                  </path>
+                </g>
+                <circle fill="#fcf4b9" transform="translate(8.167 8.167)" r="7" cy="7" cx="7" id="sun-inner"></circle>
+              </g>
+              <g data-name="moon" id="moon">
+                <g filter="url(#moon)" transform="matrix(1, 0, 0, 1, -31.5, -5.83)">
+                  <circle fill="#cce6ee" transform="translate(31.5 5.83)" r="15.167" cy="15.167" cx="15.167"
+                    data-name="moon" id="moon-3"></circle>
+                </g>
+                <g fill="#a6cad0" transform="translate(-24.415 -1.009)" id="patches">
+                  <circle transform="translate(43.009 4.496)" r="2" cy="2" cx="2"></circle>
+                  <circle transform="translate(39.366 17.952)" r="2" cy="2" cx="2" data-name="patch"></circle>
+                  <circle transform="translate(33.016 8.044)" r="1" cy="1" cx="1" data-name="patch"></circle>
+                  <circle transform="translate(51.081 18.888)" r="1" cy="1" cx="1" data-name="patch"></circle>
+                  <circle transform="translate(33.016 22.503)" r="1" cy="1" cx="1" data-name="patch"></circle>
+                  <circle transform="translate(50.081 10.53)" r="1.5" cy="1.5" cx="1.5" data-name="patch"></circle>
+                </g>
+              </g>
+            </g>
+            <g filter="url(#cloud)" transform="matrix(1, 0, 0, 1, -3.5, -3.5)">
+              <path fill="#fff" transform="translate(-3466.47 -160.94)"
+                d="M3512.81,173.815a4.463,4.463,0,0,1,2.243.62.95.95,0,0,1,.72-1.281,4.852,4.852,0,0,1,2.623.519c.034.02-.5-1.968.281-2.716a2.117,2.117,0,0,1,2.829-.274,1.821,1.821,0,0,1,.854,1.858c.063.037,2.594-.049,3.285,1.273s-.865,2.544-.807,2.626a12.192,12.192,0,0,1,2.278.892c.553.448,1.106,1.992-1.62,2.927a7.742,7.742,0,0,1-3.762-.3c-1.28-.49-1.181-2.65-1.137-2.624s-1.417,2.2-2.623,2.2a4.172,4.172,0,0,1-2.394-1.206,3.825,3.825,0,0,1-2.771.774c-3.429-.46-2.333-3.267-2.2-3.55A3.721,3.721,0,0,1,3512.81,173.815Z"
+                data-name="cloud" id="cloud"></path>
+            </g>
+            <g fill="#def8ff" transform="translate(3.585 1.325)" id="stars">
+              <path transform="matrix(-1, 0.017, -0.017, -1, 24.231, 3.055)"
+                d="M.774,0,.566.559,0,.539.458.933.25,1.492l.485-.361.458.394L1.024.953,1.509.592.943.572Z"></path>
+              <path transform="matrix(-0.777, 0.629, -0.629, -0.777, 23.185, 12.358)"
+                d="M1.341.529.836.472.736,0,.505.46,0,.4.4.729l-.231.46L.605.932l.4.326L.9.786Z" data-name="star">
+              </path>
+              <path transform="matrix(0.438, 0.899, -0.899, 0.438, 23.177, 29.735)"
+                d="M.015,1.065.475.9l.285.365L.766.772l.46-.164L.745.494.751,0,.481.407,0,.293.285.658Z"
+                data-name="star"></path>
+              <path transform="translate(12.677 0.388) rotate(104)"
+                d="M1.161,1.6,1.059,1,1.574.722.962.607.86,0,.613.572,0,.457.446.881.2,1.454l.516-.274Z"
+                data-name="star"></path>
+              <path transform="matrix(-0.07, 0.998, -0.998, -0.07, 11.066, 15.457)"
+                d="M.873,1.648l.114-.62L1.579.945,1.03.62,1.144,0,.706.464.157.139.438.7,0,1.167l.592-.083Z"
+                data-name="star"></path>
+              <path transform="translate(8.326 28.061) rotate(11)"
+                d="M.593,0,.638.724,0,.982l.7.211.045.724.36-.64.7.211L1.342.935,1.7.294,1.063.552Z" data-name="star">
+              </path>
+              <path transform="translate(5.012 5.962) rotate(172)"
+                d="M.816,0,.5.455,0,.311.323.767l-.312.455.516-.215.323.456L.827.911,1.343.7.839.552Z" data-name="star">
+              </path>
+              <path transform="translate(2.218 14.616) rotate(169)"
+                d="M1.261,0,.774.571.114.3.487.967,0,1.538.728,1.32l.372.662.047-.749.728-.218L1.215.749Z"
+                data-name="star"></path>
+            </g>
+          </g>
+        </svg>
+      </label>
+    </div>
+  </header>
+
+  <!-- Main Security Card Container -->
+  <div
+    class="w-full max-w-4xl min-h-[520px] overflow-hidden rounded-2xl flex bg-white dark:bg-slate-900 shadow-2xl border border-slate-100 dark:border-white/5 transition-all duration-300 relative z-10">
+
+    <!-- LEFT SIDE: Wallpaper Cover with Ambient Map Overlay -->
+    <div class="hidden md:block w-1/2 relative overflow-hidden border-r border-slate-100 dark:border-white/5">
+      <!-- Full Cover Wallpaper Image -->
+      <img src="assets/wallpaper.png" class="absolute inset-0 w-full h-full object-cover"
+        alt="Ethrix Mail Gen Wallpaper" />
+
+      <!-- Gradient Overlay -->
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10"></div>
+
+      <!-- Brand Content Overlay at the bottom -->
+      <div class="absolute inset-x-0 bottom-0 p-8 z-30 flex flex-col justify-end">
+        <div class="rounded-xl border border-white/10 bg-black/40 backdrop-blur-md p-5 shadow-2xl">
+          <h3 class="text-lg font-bold font-display text-white tracking-tight flex items-center gap-2">
+            <img src="assets/logo.png" class="h-6 w-auto object-contain rounded bg-white/10 p-0.5" alt="Ethrix Mail Gen Logo" />
+            Ethrix Mail Gen
+          </h3>
+          <p class="text-xs text-slate-300 font-mono mt-1.5">AI-Powered Email Generator</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE: Authentication Panel (Login/API key Entry) -->
+    <div
+      class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-white dark:bg-slate-900 transition-colors duration-300 relative">
+
+      <!-- Dynamic Alert Banner for Inline Warnings/Errors -->
+      <div id="auth-alert" class="hidden mb-5 p-3.5 rounded-xl border flex items-start gap-2.5 transition-all duration-300 text-xs font-semibold relative">
+        <div id="auth-alert-icon" class="flex-shrink-0 mt-0.5"></div>
+        <div id="auth-alert-msg" class="flex-1 text-slate-800 dark:text-slate-200 pr-4"></div>
+        <button onclick="dismissAlert()" class="absolute top-3 right-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer bg-transparent border-none">
+          <i class="fa-solid fa-xmark text-[11px]"></i>
+        </button>
+      </div>
+
+      <!-- FORM CONTAINER -->
+      <div id="forms-wrapper" class="relative">
+        <div class="space-y-6">
+          <div>
+            <h1 class="text-2xl font-bold font-display text-slate-800 dark:text-white tracking-tight">Access Ethrix Mail Gen</h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">System is fully configured with an active Gemini API key.</p>
+          </div>
+
+          <!-- Description Box -->
+          <div class="p-4 rounded-xl bg-slate-50/60 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 leading-relaxed space-y-2">
+            <p>✨ **No Setup Required**: The application has been migrated from BYOK (Bring Your Own Key) to a pre-configured server key. You can generate professional, high-converting emails immediately without entering credentials.</p>
+            <p>🔒 **Secure Connection**: Communication is encrypted, and your usage complies with our fair use hackathon limits.</p>
+          </div>
+
+          <!-- Actions -->
+          <div class="pt-2">
+            <button type="button" onclick="submitKey(event)"
+              class="btn-solid w-full py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 cursor-pointer font-bold text-xs shadow-lg"
+              style="background: linear-gradient(135deg,#8B5CF6,#06B6D4); box-shadow: 0 4px 20px rgba(139,92,246,.3);">
+              Continue to Studio ✨ <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Javascript Logic -->
+  <script src="js/main.js?v=1.2"></script>
+  <script>
+    // ── Preload/Prefill Saved Key ──────────────────
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('mailgenius_key');
+      if (saved) {
+        const input = document.getElementById('api-key-input');
+        if (input) input.value = saved;
+      }
+    });
+
+    // ── Toggle key visibility ────────────────
+    function toggleKeyVisibility() {
+      const input = document.getElementById('api-key-input');
+      const icon = document.getElementById('eye-icon');
+      if (!input || !icon) return;
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash text-xs';
+      } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye text-xs';
+      }
+    }
+
+    // ── Inline Alert System ────────────────────────
+    function showAlert(msg, type = 'error') {
+      const alertEl = document.getElementById('auth-alert');
+      const msgEl = document.getElementById('auth-alert-msg');
+      const iconEl = document.getElementById('auth-alert-icon');
+      if (!alertEl || !msgEl || !iconEl) return;
+
+      msgEl.textContent = msg;
+      alertEl.className = "mb-5 p-3.5 rounded-xl border flex items-start gap-2.5 transition-all duration-300 text-xs font-semibold relative";
+      
+      let iconHtml = '';
+      if (type === 'error') {
+        alertEl.classList.add('bg-rose-500/10', 'border-rose-500/30', 'text-rose-600', 'dark:text-rose-400');
+        iconHtml = '<i class="fa-solid fa-circle-exclamation text-rose-500 text-sm"></i>';
+      } else if (type === 'success') {
+        alertEl.classList.add('bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-600', 'dark:text-emerald-400');
+        iconHtml = '<i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>';
+      } else {
+        alertEl.classList.add('bg-blue-500/10', 'border-blue-500/30', 'text-blue-600', 'dark:text-blue-400');
+        iconHtml = '<i class="fa-solid fa-circle-info text-blue-500 text-sm"></i>';
+      }
+      iconEl.innerHTML = iconHtml;
+      alertEl.classList.remove('hidden');
+    }
+
+    function dismissAlert() {
+      const alertEl = document.getElementById('auth-alert');
+      if (alertEl) alertEl.classList.add('hidden');
+    }
+
+    // ── Action Submissions ────────────────────────
+    function submitKey(e) {
+      if (e) e.preventDefault();
+      // Clear manual key settings to ensure system config runs live
+      localStorage.removeItem('mailgenius_key');
+      localStorage.setItem('mailgenius_demo', 'false');
+      
+      showAlert('System configured successfully! Launching studio...', 'success');
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 700);
+    }
+
+    // Initialize page-specific behaviors on DOMContentLoaded
+    window.addEventListener('DOMContentLoaded', () => {
+      // Hide preloader with a smooth fade-out
+      const preloader = document.getElementById('page-preloader');
+      if (preloader) {
+        setTimeout(() => {
+          preloader.classList.add('opacity-0', 'pointer-events-none');
+          setTimeout(() => {
+            preloader.remove();
+          }, 300);
+        }, 500);
+      }
+    });
+  </script>
+</body>
+
+</html>

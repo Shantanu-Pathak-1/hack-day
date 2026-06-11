@@ -1,0 +1,3 @@
+// Ethrix Mail Gen - Configuration Template
+// Copy this file to config.js and add your API key
+window.GEMINI_API_KEY = 'your_gemini_api_key_here';

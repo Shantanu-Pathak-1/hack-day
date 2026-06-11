@@ -1,444 +1,1992 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MailGenius – AI Email Generator Powered by Gemini</title>
-  <meta name="description" content="Generate professional, persuasive, and personalized emails in seconds using Google Gemini AI. MailGenius is your intelligent email writing assistant." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><circle cx='24' cy='24' r='24' fill='%238B5CF6'/><path d='M24 10L26.5 18H35L28.5 23L31 31L24 26L17 31L19.5 23L13 18H21.5L24 10Z' fill='white'/></svg>" />
+  <meta charset="UTF-8">
+  <script>
+    (function () {
+      const theme = localStorage.getItem('theme') || 'dark';
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ethrix Mail Gen - AI Email Generator</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <meta name="description"
+    content="A hackathon prototype that generates professional, persuasive, and personalized emails in seconds using Google Gemini AI." />
+
+  <script src="js/config.js?v=1.2"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <!-- Animated background particles -->
-  <canvas id="particles-canvas"></canvas>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
 
-  <!-- API Key Modal -->
-  <div id="api-key-modal" class="modal-overlay active">
-    <div class="modal-card" id="api-modal-card">
-      <div class="modal-glow"></div>
-      <div class="modal-icon">
-        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-          <circle cx="24" cy="24" r="24" fill="url(#gemini-grad)"/>
-          <defs>
-            <linearGradient id="gemini-grad" x1="0" y1="0" x2="48" y2="48">
-              <stop offset="0%" stop-color="#8B5CF6"/>
-              <stop offset="100%" stop-color="#06B6D4"/>
-            </linearGradient>
-          </defs>
-          <path d="M24 10L26.5 18H35L28.5 23L31 31L24 26L17 31L19.5 23L13 18H21.5L24 10Z" fill="white" opacity="0.9"/>
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'space': 'rgb(var(--background-rgb))',
+            'space-light': 'rgb(var(--muted-rgb))',
+            'space-card': 'rgb(var(--card-rgb))',
+            'neon': 'rgb(var(--primary-rgb))',
+            'neon-dim': 'rgb(var(--ring-rgb))',
+            'neon-glow': 'rgb(var(--accent-rgb))',
+            'neon-border': 'rgb(var(--border-rgb))',
+            'purple-glow': 'rgb(var(--chart-3-rgb))',
+            'amber-glow': 'rgb(var(--chart-4-rgb))',
+            'rose-glow': 'rgb(var(--destructive-rgb))',
+            'emerald-glow': 'rgb(var(--chart-2-rgb))',
+            background: 'rgb(var(--background-rgb))',
+            foreground: 'rgb(var(--foreground-rgb))',
+            card: 'rgb(var(--card-rgb))',
+            border: 'rgb(var(--border-rgb))',
+            primary: 'rgb(var(--primary-rgb))',
+            muted: 'rgb(var(--muted-rgb))',
+            accent: 'rgb(var(--accent-rgb))',
+            ring: 'rgb(var(--ring-rgb))',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            display: ['Space Grotesk', 'sans-serif'],
+          },
+          boxShadow: {
+            'neon': '0 0 25px rgba(161, 161, 161, 0.1), 0 0 70px rgba(161, 161, 161, 0.05)',
+            'neon-sm': '0 0 12px rgba(161, 161, 161, 0.15)',
+            'card': '0 12px 40px rgba(0, 0, 0, 0.05)',
+            'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+          },
+          backdropBlur: {
+            'glass': '16px',
+          },
+          animation: {
+            'pulse-neon': 'pulseNeon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'fade-in': 'fadeIn 0.5s ease-out',
+            'shimmer': 'shimmer 2.5s infinite',
+          },
+          keyframes: {
+            pulseNeon: {
+              '0%, 100%': { opacity: '1', boxShadow: '0 0 10px rgba(161,161,161,0.15)' },
+              '50%': { opacity: '0.7', boxShadow: '0 0 25px rgba(161,161,161,0.3)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(15px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            shimmer: {
+              '0%': { backgroundPosition: '-200% 0' },
+              '100%': { backgroundPosition: '200% 0' },
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    /* Light Theme */
+    :root {
+      --background: #f5f7fb;
+      --card: rgba(226, 232, 240, 0.9);
+      --popover: rgba(0, 0, 0, 0.96);
+      --border: rgba(148, 163, 184, 0.24);
+      --muted: rgba(241, 245, 249, 0.95);
+      --accent: rgba(226, 232, 240, 0.95);
+      --ring: #5b6b84;
+      --foreground: #0f172a;
+      --primary: #6d28d9;
+      --primary-foreground: #ffffff;
+      --sidebar: rgba(226, 232, 240, 0.88);
+      --sidebar-border: rgba(148, 163, 184, 0.24);
+      --sidebar-primary: rgba(237, 233, 254, 0.95);
+      --sidebar-primary-foreground: #4c1d95;
+      --muted-foreground: #475569;
+      --accent-foreground: #0f172a;
+      --popover-foreground: #0f172a;
+      --sidebar-foreground: #0f172a;
+      --sidebar-accent: rgba(237, 233, 254, 0.72);
+
+      /* Missing variables */
+      --radius: 12px;
+      --destructive: #dc2626;
+      --chart-3: #7c3aed;
+
+      /* RGB variables for Tailwind opacity support */
+      --background-rgb: 245, 247, 251;
+      --foreground-rgb: 15, 23, 42;
+      --card-rgb: 226, 232, 240;
+      --border-rgb: 148, 163, 184;
+      --primary-rgb: 109, 40, 217;
+      --muted-rgb: 241, 245, 249;
+      --accent-rgb: 237, 233, 254;
+      --ring-rgb: 91, 107, 132;
+      --chart-2-rgb: 20, 184, 166;
+      --chart-3-rgb: 124, 58, 237;
+      --chart-4-rgb: 245, 158, 11;
+      --destructive-rgb: 244, 63, 94;
+    }
+
+    /* Dark Theme */
+    .dark {
+      --background: #07111f;
+      --card: rgba(15, 23, 42, 0.82);
+      --popover: rgba(15, 23, 42, 0.92);
+      --border: rgba(148, 163, 184, 0.18);
+      --muted: rgba(15, 23, 42, 0.86);
+      --accent: rgba(30, 41, 59, 0.9);
+      --ring: #94a3b8;
+      --foreground: #f8fafc;
+      --primary: #8b5cf6;
+      --primary-foreground: #ffffff;
+      --sidebar: rgba(15, 23, 42, 0.9);
+      --sidebar-border: rgba(148, 163, 184, 0.18);
+      --sidebar-primary: rgba(59, 130, 246, 0.22);
+      --sidebar-primary-foreground: #f8fafc;
+      --muted-foreground: #cbd5e1;
+      --accent-foreground: #f8fafc;
+      --popover-foreground: #f8fafc;
+      --sidebar-foreground: #f8fafc;
+      --sidebar-accent: rgba(30, 41, 59, 0.95);
+
+      /* Missing variables */
+      --radius: 12px;
+      --destructive: #f87171;
+      --chart-3: #c084fc;
+
+      /* RGB variables for Tailwind opacity support */
+      --background-rgb: 7, 17, 31;
+      --foreground-rgb: 248, 250, 252;
+      --card-rgb: 15, 23, 42;
+      --border-rgb: 71, 85, 105;
+      --primary-rgb: 139, 92, 246;
+      --muted-rgb: 15, 23, 42;
+      --accent-rgb: 30, 41, 59;
+      --ring-rgb: 148, 163, 184;
+      --chart-2-rgb: 52, 211, 153;
+      --chart-3-rgb: 192, 132, 252;
+      --chart-4-rgb: 251, 191, 36;
+      --destructive-rgb: 248, 113, 113;
+    }
+
+    /* Shared Theme Surfaces */
+    body {
+      background-color: var(--background);
+      color: var(--foreground);
+      overflow-x: hidden;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* Modern Ambient Glow Blobs CSS Keyframe Animations */
+    @keyframes blobFloat1 {
+      0%, 100% { transform: translate(0px, 0px) scale(1); }
+      33% { transform: translate(30px, -50px) scale(1.05); }
+      66% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+    @keyframes blobFloat2 {
+      0%, 100% { transform: translate(0px, 0px) scale(1); }
+      50% { transform: translate(-40px, 40px) scale(1.05); }
+    }
+    @keyframes blobFloat3 {
+      0%, 100% { transform: translate(0px, 0px) scale(1); }
+      33% { transform: translate(-25px, 25px) scale(0.95); }
+      66% { transform: translate(40px, -30px) scale(1.08); }
+    }
+    @keyframes blobFloat4 {
+      0%, 100% { transform: translate(0px, 0px) scale(1); }
+      50% { transform: translate(30px, -20px) scale(1.03); }
+    }
+
+    .animate-blob-float-1 { animation: blobFloat1 25s ease-in-out infinite; }
+    .animate-blob-float-2 { animation: blobFloat2 20s ease-in-out infinite; }
+    .animate-blob-float-3 { animation: blobFloat3 22s ease-in-out infinite; }
+    .animate-blob-float-4 { animation: blobFloat4 28s ease-in-out infinite; }
+
+
+    /* Shared Components */
+    .glass {
+      background: var(--card);
+      backdrop-filter: blur(22px) saturate(140%);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      box-shadow:
+        0 16px 45px rgba(15, 23, 42, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.38);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease, box-shadow 0.4s ease, background-color 0.3s ease;
+    }
+
+    .dark .glass {
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow:
+        0 22px 55px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    html:not(.dark) .glass {
+      background: rgba(226, 232, 240, 0.9);
+      border-color: rgba(100, 116, 139, 0.2);
+      box-shadow:
+        0 18px 40px rgba(15, 23, 42, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    }
+
+    .glass:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: rgba(var(--primary-rgb), 0.6);
+      box-shadow: 
+        0 24px 50px rgba(var(--primary-rgb), 0.18), 
+        0 0 25px rgba(var(--primary-rgb), 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    }
+
+    .dark .glass:hover {
+      border-color: rgba(var(--primary-rgb), 0.75);
+      box-shadow: 
+        0 24px 50px rgba(0, 0, 0, 0.55), 
+        0 0 30px rgba(var(--primary-rgb), 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    /* Disable lift/scale hover animations for try demo panels to prevent cursor/input irritation */
+    #live-demo .glass:hover {
+      transform: none !important;
+      border-color: var(--border) !important;
+      box-shadow: 0 16px 45px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.38) !important;
+    }
+
+    .dark #live-demo .glass:hover {
+      border-color: var(--border) !important;
+      box-shadow: 0 22px 55px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+    }
+
+    #live-demo .glass:hover i, 
+    #live-demo .glass:hover .fa-solid, 
+    #live-demo .glass:hover .fa-regular {
+      transform: none !important;
+      color: inherit !important;
+    }
+
+    /* Icon micro-animations inside glass cards */
+    .glass i, .glass .fa-solid, .glass .fa-regular {
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s ease;
+    }
+
+    .glass:hover i, .glass:hover .fa-solid, .glass:hover .fa-regular {
+      transform: scale(1.22) rotate(8deg);
+      color: rgba(var(--primary-rgb), 1);
+    }
+
+    /* Shared Utilities */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--ring);
+    }
+
+    /* Shared Buttons */
+    .btn-neon {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--foreground);
+      padding: 10px 22px;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      letter-spacing: 0.04em;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-neon:hover {
+      background: rgba(var(--primary-rgb), 0.06);
+      border-color: rgba(var(--primary-rgb), 0.8);
+      box-shadow: 
+        0 10px 24px rgba(var(--primary-rgb), 0.2),
+        0 0 15px rgba(var(--primary-rgb), 0.1);
+      transform: translateY(-3px) scale(1.04);
+    }
+
+    .btn-neon i {
+      transition: transform 0.4s ease;
+    }
+
+    .btn-neon:hover i {
+      transform: scale(1.2) rotate(15deg);
+    }
+
+    .btn-neon:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .btn-solid {
+      background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.95), rgba(79, 70, 229, 0.95));
+      background-size: 200% 100%;
+      background-position: left center;
+      color: var(--primary-foreground);
+      padding: 10px 22px;
+      border-radius: var(--radius);
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      letter-spacing: 0.04em;
+      box-shadow: 0 10px 20px rgba(var(--primary-rgb), 0.15);
+    }
+
+    .btn-solid:hover {
+      background-position: right center;
+      box-shadow: 
+        0 15px 30px rgba(var(--primary-rgb), 0.35),
+        0 0 15px rgba(var(--primary-rgb), 0.2);
+      transform: translateY(-3px) scale(1.04);
+    }
+
+    .btn-solid i {
+      transition: transform 0.3s ease;
+    }
+
+    .btn-solid:hover i {
+      transform: translateX(4px);
+    }
+
+    .btn-solid:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    /* Shared Editor Blocks */
+    .dropzone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      background: var(--muted);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35);
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .dropzone:hover,
+    .dropzone.drag-over {
+      border-color: rgba(var(--primary-rgb), 0.8);
+      background: rgba(var(--primary-rgb), 0.03);
+      transform: translateY(-4px);
+      box-shadow: 
+        0 15px 30px rgba(var(--primary-rgb), 0.1),
+        0 0 15px rgba(var(--primary-rgb), 0.05);
+    }
+
+    .dropzone i {
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .dropzone:hover i {
+      animation: floatCloud 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatCloud {
+      0% { transform: translateY(-4px) scale(1.25); }
+      100% { transform: translateY(-8px) scale(1.25); }
+    }
+
+    /* Shared IDE Blocks */
+    .ide-wrapper {
+      display: flex;
+      height: 360px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--card);
+      transition: all 0.3s ease;
+    }
+
+    .ide-wrapper:hover {
+      border-color: rgba(var(--primary-rgb), 0.4);
+    }
+
+    .ide-wrapper:focus-within {
+      border-color: rgba(var(--primary-rgb), 0.8);
+      box-shadow: 
+        0 0 20px rgba(var(--primary-rgb), 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    /* Interactive Demo Action Button Custom Animations */
+    #btn-analyze {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    #btn-analyze:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 
+        0 12px 25px rgba(var(--primary-rgb), 0.3),
+        0 0 15px rgba(var(--primary-rgb), 0.15);
+      background-color: rgb(124, 58, 237); /* Purple-600 */
+    }
+    #btn-analyze:hover i {
+      animation: scanIcon 1.5s ease-in-out infinite;
+    }
+    @keyframes scanIcon {
+      0%, 100% { transform: scale(1.2) rotate(0deg); }
+      25% { transform: scale(1.2) rotate(-15deg); }
+      75% { transform: scale(1.2) rotate(15deg); }
+    }
+
+    #btn-fix {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    #btn-fix:hover {
+      transform: translateY(-3px) scale(1.03);
+      background: rgba(124, 58, 237, 0.25);
+      border-color: rgba(124, 58, 237, 0.85);
+      box-shadow: 
+        0 12px 25px rgba(124, 58, 237, 0.25),
+        0 0 15px rgba(124, 58, 237, 0.15);
+    }
+    #btn-fix:hover i {
+      animation: magicWand 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    @keyframes magicWand {
+      0% { transform: scale(1.2) rotate(0deg); filter: drop-shadow(0 0 2px rgba(192, 132, 252, 0.5)); }
+      50% { transform: scale(1.4) rotate(180deg); filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.9)); }
+      100% { transform: scale(1.2) rotate(360deg); filter: drop-shadow(0 0 2px rgba(192, 132, 252, 0.5)); }
+    }
+
+    #btn-docgen {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    #btn-docgen:hover {
+      transform: translateY(-3px) scale(1.03);
+      background: rgba(15, 23, 42, 0.8);
+      border-color: rgba(var(--primary-rgb), 0.8);
+      box-shadow: 
+        0 12px 25px rgba(var(--primary-rgb), 0.2),
+        0 0 15px rgba(var(--primary-rgb), 0.1);
+    }
+    .dark #btn-docgen:hover {
+      background: rgba(30, 41, 59, 0.8);
+    }
+    #btn-docgen:hover i {
+      animation: docgenBounce 1.2s ease infinite;
+    }
+    @keyframes docgenBounce {
+      0%, 100% { transform: translateY(0) scale(1.1); }
+      50% { transform: translateY(-5px) scale(1.15); }
+    }
+
+    /* Trash/Clear Button animation */
+    button[onclick="clearEditor()"] {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    button[onclick="clearEditor()"]:hover {
+      transform: translateY(-3px) scale(1.06);
+      background: rgba(244, 63, 94, 0.2);
+      border-color: rgba(244, 63, 94, 0.8);
+      box-shadow: 
+        0 10px 20px rgba(244, 63, 94, 0.25),
+        0 0 10px rgba(244, 63, 94, 0.1);
+    }
+    button[onclick="clearEditor()"]:hover i {
+      animation: trashWiggle 0.6s ease infinite;
+    }
+    @keyframes trashWiggle {
+      0%, 100% { transform: rotate(0deg) scale(1.1); }
+      25% { transform: rotate(-8deg) scale(1.1); }
+      75% { transform: rotate(8deg) scale(1.1); }
+    }
+
+    /* System Architecture Stack Cards left border and badges */
+    .glass[class*="border-l-4"] {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-left-width 0.3s ease;
+    }
+    .glass[class*="border-l-4"]:hover {
+      border-left-width: 8px !important;
+      transform: translateY(-6px) scale(1.02);
+    }
+    .glass[class*="border-l-4"] span[class*="font-mono"] {
+      transition: all 0.3s ease;
+    }
+    .glass[class*="border-l-4"]:hover span[class*="font-mono"] {
+      transform: scale(1.06) rotate(2deg);
+      border-color: rgba(var(--primary-rgb), 0.5);
+      background-color: rgba(var(--primary-rgb), 0.08);
+      box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.1);
+    }
+
+    /* Navbar Brand Logo and items */
+    a[href="#"] img {
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
+    }
+    a[href="#"]:hover img {
+      transform: scale(1.12) rotate(-3deg);
+      filter: drop-shadow(0 0 8px rgba(var(--primary-rgb), 0.45));
+    }
+    a[href="#"] span.text-neon {
+      transition: text-shadow 0.3s ease;
+    }
+    a[href="#"]:hover span.text-neon {
+      text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.6);
+    }
+    header a:not([href="#"]):not(.btn-neon) {
+      transition: all 0.3s ease;
+    }
+    header a:not([href="#"]):not(.btn-neon):hover {
+      text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.4);
+      transform: translateY(-1px);
+    }
+
+
+    .ide-gutter {
+      width: 40px;
+      background: var(--muted);
+      border-right: 1px solid var(--border);
+      padding: 12px 0;
+      user-select: none;
+      overflow: hidden;
+      text-align: right;
+      height: 100%;
+    }
+
+    .ide-gutter .ln {
+      display: block;
+      padding-right: 8px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted-foreground);
+      line-height: 20px;
+      opacity: 0.6;
+    }
+
+    .ide-gutter .ln.active-ln {
+      color: var(--primary);
+      font-weight: 600;
+      opacity: 1;
+    }
+
+    .ide-textarea {
+      flex: 1;
+      resize: none;
+      background: transparent;
+      color: var(--foreground);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      line-height: 20px;
+      padding: 12px 14px;
+      border: none;
+      outline: none;
+      tab-size: 2;
+      height: 100%;
+      overflow-y: auto;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    /* Shared Markdown Output */
+    .md-content h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .md-content h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--foreground);
+      margin: 16px 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .md-content h2::before {
+      content: '##';
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted-foreground);
+    }
+
+    .md-content h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--chart-3);
+      margin: 12px 0 6px;
+    }
+
+    .md-content p {
+      font-size: 0.78rem;
+      color: var(--muted-foreground);
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .md-content ul {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 10px;
+    }
+
+    .md-content ul li {
+      font-size: 0.78rem;
+      color: var(--muted-foreground);
+      line-height: 1.5;
+      padding: 2px 0 2px 16px;
+      position: relative;
+    }
+
+    .md-content ul li::before {
+      content: '\203a';
+      position: absolute;
+      left: 4px;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .md-content code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      background: var(--muted);
+      color: var(--primary);
+      padding: 1px 4px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .md-content pre {
+      background: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+
+    .md-content pre code {
+      background: transparent;
+      border: none;
+      padding: 0;
+      font-size: 10.5px;
+      color: var(--foreground);
+    }
+
+    .md-content blockquote {
+      border-left: 3px solid var(--primary);
+      padding: 4px 12px;
+      margin: 8px 0;
+      background: var(--muted);
+      border-radius: 0 6px 6px 0;
+    }
+
+    .md-content blockquote p {
+      margin: 0;
+      color: var(--foreground);
+      opacity: 0.8;
+    }
+
+    .md-content strong {
+      color: var(--foreground);
+      font-weight: 700;
+    }
+
+    .md-content em {
+      color: var(--chart-3);
+      font-style: italic;
+    }
+
+    .md-content hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 14px 0;
+    }
+
+    .hero-badge {
+      box-shadow: 0 14px 34px rgba(109, 40, 217, 0.12);
+      backdrop-filter: blur(14px);
+    }
+
+    html:not(.dark) .hero-badge {
+      background: rgba(237, 233, 254, 0.9);
+      color: #5b21b6;
+      border-color: rgba(167, 139, 250, 0.45);
+      box-shadow: 0 12px 28px rgba(124, 58, 237, 0.14);
+    }
+
+    .hero-title {
+      text-wrap: balance;
+      line-height: 0.96;
+      letter-spacing: -0.04em;
+      text-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+    }
+
+    html:not(.dark) .hero-title,
+    html:not(.dark) .hero-title .text-transparent {
+      color: #0f172a !important;
+      text-shadow: none;
+    }
+
+    html:not(.dark) .hero-title .text-transparent {
+      background-image: none !important;
+      -webkit-text-fill-color: #0f172a !important;
+    }
+
+    .section-kicker {
+      letter-spacing: 0.18em;
+    }
+
+    .hero-feature {
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.07);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    }
+
+    .hero-feature:hover {
+      transform: translateY(-8px) scale(1.03);
+      border-color: rgba(var(--primary-rgb), 0.6);
+      box-shadow: 
+        0 24px 45px rgba(var(--primary-rgb), 0.2),
+        0 0 20px rgba(var(--primary-rgb), 0.12);
+    }
+
+    .hero-feature p:first-of-type {
+      transition: letter-spacing 0.3s ease, color 0.3s ease;
+    }
+
+    .hero-feature:hover p:first-of-type {
+      letter-spacing: 0.26em;
+      text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.3);
+    }
+
+    html:not(.dark) .hero-feature {
+      background: rgba(226, 232, 240, 0.84);
+      border-color: rgba(148, 163, 184, 0.24);
+    }
+
+    html:not(.dark) .hero-feature p {
+      color: #0f172a !important;
+    }
+
+    /* Shared Badges */
+    .badge-critical {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 9.5px;
+      font-weight: 700;
+      background: rgba(231, 0, 11, 0.1);
+      color: var(--destructive);
+      border: 1px solid rgba(231, 0, 11, 0.2);
+    }
+
+    .badge-warn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 9.5px;
+      font-weight: 700;
+      background: rgba(245, 158, 11, 0.1);
+      color: #D97706;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .badge-ok {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 9.5px;
+      font-weight: 700;
+      background: rgba(16, 185, 129, 0.1);
+      color: #059669;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .badge-info {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 9.5px;
+      font-weight: 700;
+      background: var(--muted);
+      color: var(--primary);
+      border: 1px solid var(--border);
+    }
+
+    /* Ring Spinner */
+    .neon-spinner-wrap {
+      position: relative;
+      width: 68px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .neon-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      animation: spinRing 2s linear infinite;
+    }
+
+    .neon-ring-1 {
+      inset: 0;
+      border-top-color: var(--primary);
+      border-right-color: var(--border);
+      animation-duration: 1.2s;
+    }
+
+    .neon-ring-2 {
+      inset: 10px;
+      border-bottom-color: var(--chart-3);
+      border-left-color: var(--border);
+      animation-duration: 1.8s;
+      animation-direction: reverse;
+    }
+
+    .neon-ring-3 {
+      inset: 20px;
+      border-top-color: var(--ring);
+      animation-duration: 0.8s;
+    }
+
+    .neon-core {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 10px var(--primary);
+    }
+
+    @keyframes spinRing {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Theme Toggle Switch */
+    #theme-toggle-button {
+      font-size: 10px; /* Compact sizing for navbar placement */
+      position: relative;
+      display: inline-block;
+      width: 7em;
+      cursor: pointer;
+    }
+
+    #toggle {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    #container,
+    #patches,
+    #stars,
+    #button,
+    #sun,
+    #moon,
+    #cloud {
+      transition-property: all;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 0.25s;
+    }
+
+    #toggle:checked + svg #container {
+      fill: #2b4360;
+    }
+
+    #toggle:checked + svg #button {
+      transform: translate(28px, 2.333px);
+    }
+
+    #sun {
+      opacity: 1;
+    }
+
+    #toggle:checked + svg #sun {
+      opacity: 0;
+    }
+
+    #moon {
+      opacity: 0;
+    }
+
+    #toggle:checked + svg #moon {
+      opacity: 1;
+    }
+
+    #cloud {
+      opacity: 1;
+    }
+
+    #toggle:checked + svg #cloud {
+      opacity: 0;
+    }
+
+    #stars {
+      opacity: 0;
+    }
+
+    #toggle:checked + svg #stars {
+      opacity: 1;
+    }
+
+    /* Hero Section Dynamic Text Ticker */
+    #hero-dynamic-text {
+      background-image: linear-gradient(to right, var(--primary), var(--chart-3));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent !important;
+      transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    #hero-dynamic-text.ticker-hidden {
+      opacity: 0;
+      transform: translateY(-12px) scale(0.95);
+    }
+
+    /* Preloader & Loader Styles */
+    .loader {
+      --path: #cbd5e1;
+      --dot: #5628ee;
+      --duration: 3s;
+      width: 44px;
+      height: 44px;
+      position: relative;
+      display: inline-block;
+      margin: 0 16px;
+    }
+
+    .dark .loader {
+      --path: #1e293b;
+      --dot: #a855f7;
+    }
+
+    .loader:before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      position: absolute;
+      display: block;
+      background: var(--dot);
+      top: 37px;
+      left: 19px;
+      transform: translate(-18px, -18px);
+      animation: dotRect var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
+    }
+
+    .loader svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .loader svg rect,
+    .loader svg polygon,
+    .loader svg circle {
+      fill: none;
+      stroke: var(--path);
+      stroke-width: 10px;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+
+    .loader svg polygon {
+      stroke-dasharray: 145 76 145 76;
+      stroke-dashoffset: 0;
+      animation: pathTriangle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
+    }
+
+    .loader svg rect {
+      stroke-dasharray: 192 64 192 64;
+      stroke-dashoffset: 0;
+      animation: pathRect 3s cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
+    }
+
+    .loader svg circle {
+      stroke-dasharray: 150 50 150 50;
+      stroke-dashoffset: 75;
+      animation: pathCircle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
+    }
+
+    .loader.triangle {
+      width: 48px;
+    }
+
+    .loader.triangle:before {
+      left: 21px;
+      transform: translate(-10px, -18px);
+      animation: dotTriangle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
+    }
+
+    @keyframes pathTriangle {
+      33% { stroke-dashoffset: 74; }
+      66% { stroke-dashoffset: 147; }
+      100% { stroke-dashoffset: 221; }
+    }
+
+    @keyframes dotTriangle {
+      33% { transform: translate(0, 0); }
+      66% { transform: translate(10px, -18px); }
+      100% { transform: translate(-10px, -18px); }
+    }
+
+    @keyframes pathRect {
+      25% { stroke-dashoffset: 64; }
+      50% { stroke-dashoffset: 128; }
+      75% { stroke-dashoffset: 192; }
+      100% { stroke-dashoffset: 256; }
+    }
+
+    @keyframes dotRect {
+      25% { transform: translate(0, 0); }
+      50% { transform: translate(18px, -18px); }
+      75% { transform: translate(0, -36px); }
+      100% { transform: translate(-18px, -18px); }
+    }
+
+    @keyframes pathCircle {
+      25% { stroke-dashoffset: 125; }
+      50% { stroke-dashoffset: 175; }
+      75% { stroke-dashoffset: 225; }
+      100% { stroke-dashoffset: 275; }
+    }
+  </style>
+</head>
+
+<body class="relative min-h-screen font-sans selection:bg-primary/20 selection:text-primary">
+
+  <!-- Preloader Page Loading Screen -->
+  <div id="page-preloader" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white dark:bg-slate-950 transition-opacity duration-300 ease-out">
+    <div class="flex items-center justify-center">
+      <div class="loader">
+        <svg viewBox="0 0 80 80">
+          <circle r="32" cy="40" cx="40" id="test"></circle>
         </svg>
       </div>
-      <h2 class="modal-title">Welcome to <span class="gradient-text">MailGenius</span></h2>
-      <p class="modal-subtitle">Enter your Google Gemini API key to unlock AI-powered email generation</p>
-      <form id="api-key-form" class="input-group" onsubmit="return false;">
-        <label for="api-key-input" class="input-label">Gemini API Key</label>
-        <div class="input-wrapper">
-          <input
-            type="password"
-            id="api-key-input"
-            class="text-input"
-            placeholder="AIzaSy..."
-            autocomplete="current-password"
-          />
-          <button type="button" class="toggle-visibility" id="toggle-key-visibility" title="Show/Hide key">
-            <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
+      <div class="loader triangle">
+        <svg viewBox="0 0 86 80">
+          <polygon points="43 8 79 72 7 72"></polygon>
+        </svg>
+      </div>
+      <div class="loader">
+        <svg viewBox="0 0 80 80">
+          <rect height="64" width="64" y="8" x="8"></rect>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <!-- Floating Background Paths & Modern Ambient Glow Backdrop -->
+  <div id="ambient-backdrop" class="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none">
+    
+    <!-- Modern Blur Mesh Gradient Blobs -->
+    <div class="absolute inset-0 z-0 opacity-100 dark:opacity-80 transition-opacity duration-500">
+      <!-- Purple Glow Blob -->
+      <div class="absolute top-[10%] left-[5%] w-[45vw] h-[45vw] min-w-[320px] rounded-full bg-purple-600/12 dark:bg-purple-600/8 blur-[130px] animate-blob-float-1"></div>
+      
+      <!-- Cyan/Teal Glow Blob -->
+      <div class="absolute bottom-[10%] right-[10%] w-[40vw] h-[40vw] min-w-[300px] rounded-full bg-teal-500/10 dark:bg-teal-500/6 blur-[120px] animate-blob-float-2"></div>
+      
+      <!-- Warm Orange/Amber Glow Blob -->
+      <div class="absolute top-[-10%] right-[-5%] w-[35vw] h-[35vw] min-w-[280px] rounded-full bg-amber-500/8 dark:bg-amber-600/4 blur-[110px] animate-blob-float-3"></div>
+
+      <!-- Indigo Glow Blob -->
+      <div class="absolute bottom-[-15%] left-[20%] w-[38vw] h-[38vw] min-w-[280px] rounded-full bg-indigo-500/10 dark:bg-indigo-600/6 blur-[120px] animate-blob-float-4"></div>
+    </div>
+
+    <!-- GPU-Accelerated Canvas Paths (Rendered on top of blobs) -->
+    <canvas id="paths-canvas" class="absolute inset-0 w-full h-full" style="object-fit: fill;"></canvas>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       HEADER / NAVBAR
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <header class="sticky top-0 z-50 w-full bg-space/70 backdrop-blur-xl">
+    <div class="container mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
+
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-2">
+        <img src="assets/logo.png" class="h-8 w-auto object-contain rounded" alt="Ethrix Mail Gen Logo" />
+        <div>
+          <span class="text-md font-bold tracking-wider font-mono text-slate-900 dark:text-white">Ethrix<span
+              class="text-neon"> Mail Gen</span></span>
         </div>
-      </form>
-      <p class="modal-hint">
-        🔒 Your key stays in your browser and is never sent to our servers.
-        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="link">Get a free API key →</a>
+      </a>
+
+      <!-- Navigation & Badges -->
+      <div class="flex items-center gap-4">
+        <!-- Theme Toggle Switch -->
+        <div class="flex items-center justify-center">
+          <label id="theme-toggle-button">
+            <input type="checkbox" id="toggle" onchange="toggleDarkMode()">
+            <svg viewBox="0 0 69.667 44" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" class="w-[64px] h-[40px]">
+              <g transform="translate(3.5 3.5)" data-name="Component 15 – 1" id="Component_15_1">
+                <g filter="url(#container)" transform="matrix(1, 0, 0, 1, -3.5, -3.5)">
+                  <rect fill="#83cbd8" transform="translate(3.5 3.5)" rx="17.5" height="35" width="60.667" data-name="container" id="container"></rect>
+                </g>
+                <g transform="translate(2.333 2.333)" id="button">
+                  <g data-name="sun" id="sun">
+                    <g filter="url(#sun-outer)" transform="matrix(1, 0, 0, 1, -5.83, -5.83)">
+                      <circle fill="#f8e664" transform="translate(5.83 5.83)" r="15.167" cy="15.167" cx="15.167" data-name="sun-outer" id="sun-outer-2"></circle>
+                    </g>
+                    <g filter="url(#sun)" transform="matrix(1, 0, 0, 1, -5.83, -5.83)">
+                      <path fill="rgba(246,254,247,0.29)" transform="translate(9.33 9.33)" d="M11.667,0A11.667,11.667,0,1,1,0,11.667,11.667,11.667,0,0,1,11.667,0Z" data-name="sun" id="sun-3"></path>
+                    </g>
+                    <circle fill="#fcf4b9" transform="translate(8.167 8.167)" r="7" cy="7" cx="7" id="sun-inner"></circle>
+                  </g>
+                  <g data-name="moon" id="moon">
+                    <g filter="url(#moon)" transform="matrix(1, 0, 0, 1, -31.5, -5.83)">
+                      <circle fill="#cce6ee" transform="translate(31.5 5.83)" r="15.167" cy="15.167" cx="15.167" data-name="moon" id="moon-3"></circle>
+                    </g>
+                    <g fill="#a6cad0" transform="translate(-24.415 -1.009)" id="patches">
+                      <circle transform="translate(43.009 4.496)" r="2" cy="2" cx="2"></circle>
+                      <circle transform="translate(39.366 17.952)" r="2" cy="2" cx="2" data-name="patch"></circle>
+                      <circle transform="translate(33.016 8.044)" r="1" cy="1" cx="1" data-name="patch"></circle>
+                      <circle transform="translate(51.081 18.888)" r="1" cy="1" cx="1" data-name="patch"></circle>
+                      <circle transform="translate(33.016 22.503)" r="1" cy="1" cx="1" data-name="patch"></circle>
+                      <circle transform="translate(50.081 10.53)" r="1.5" cy="1.5" cx="1.5" data-name="patch"></circle>
+                    </g>
+                  </g>
+                </g>
+                <g filter="url(#cloud)" transform="matrix(1, 0, 0, 1, -3.5, -3.5)">
+                  <path fill="#fff" transform="translate(-3466.47 -160.94)" d="M3512.81,173.815a4.463,4.463,0,0,1,2.243.62.95.95,0,0,1,.72-1.281,4.852,4.852,0,0,1,2.623.519c.034.02-.5-1.968.281-2.716a2.117,2.117,0,0,1,2.829-.274,1.821,1.821,0,0,1,.854,1.858c.063.037,2.594-.049,3.285,1.273s-.865,2.544-.807,2.626a12.192,12.192,0,0,1,2.278.892c.553.448,1.106,1.992-1.62,2.927a7.742,7.742,0,0,1-3.762-.3c-1.28-.49-1.181-2.65-1.137-2.624s-1.417,2.2-2.623,2.2a4.172,4.172,0,0,1-2.394-1.206,3.825,3.825,0,0,1-2.771.774c-3.429-.46-2.333-3.267-2.2-3.55A3.721,3.721,0,0,1,3512.81,173.815Z" data-name="cloud" id="cloud"></path>
+                </g>
+                <g fill="#def8ff" transform="translate(3.585 1.325)" id="stars">
+                  <path transform="matrix(-1, 0.017, -0.017, -1, 24.231, 3.055)" d="M.774,0,.566.559,0,.539.458.933.25,1.492l.485-.361.458.394L1.024.953,1.509.592.943.572Z"></path>
+                  <path transform="matrix(-0.777, 0.629, -0.629, -0.777, 23.185, 12.358)" d="M1.341.529.836.472.736,0,.505.46,0,.4.4.729l-.231.46L.605.932l.4.326L.9.786Z" data-name="star"></path>
+                  <path transform="matrix(0.438, 0.899, -0.899, 0.438, 23.177, 29.735)" d="M.015,1.065.475.9l.285.365L.766.772l.46-.164L.745.494.751,0,.481.407,0,.293.285.658Z" data-name="star"></path>
+                  <path transform="translate(12.677 0.388) rotate(104)" d="M1.161,1.6,1.059,1,1.574.722.962.607.86,0,.613.572,0,.457.446.881.2,1.454l.516-.274Z" data-name="star"></path>
+                  <path transform="matrix(-0.07, 0.998, -0.998, -0.07, 11.066, 15.457)" d="M.873,1.648l.114-.62L1.579.945,1.03.62,1.144,0,.706.464.157.139.438.7,0,1.167l.592-.083Z" data-name="star"></path>
+                  <path transform="translate(8.326 28.061) rotate(11)" d="M.593,0,.638.724,0,.982l.7.211.045.724.36-.64.7.211L1.342.935,1.7.294,1.063.552Z" data-name="star"></path>
+                  <path transform="translate(5.012 5.962) rotate(172)" d="M.816,0,.5.455,0,.311.323.767l-.312.455.516-.215.323.456L.827.911,1.343.7.839.552Z" data-name="star"></path>
+                  <path transform="translate(2.218 14.616) rotate(169)" d="M1.261,0,.774.571.114.3.487.967,0,1.538.728,1.32l.372.662.047-.749.728-.218L1.215.749Z" data-name="star"></path>
+                </g>
+              </g>
+            </svg>
+          </label>
+        </div>
+        <!-- Login Button -->
+        <a href="login.html"
+          class="btn-neon text-xs md:text-sm py-1.5 px-4 rounded-lg flex items-center gap-2 cursor-pointer">
+          Login <i class="fa-solid fa-right-to-bracket text-xs"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       HERO SECTION
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <section class="relative z-10 pt-20 pb-24 overflow-hidden">
+    <div class="container mx-auto px-4 md:px-8 text-center max-w-6xl">
+
+      <!-- Project Target Header Badge -->
+      <div
+        class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-glow/10 border border-purple-glow/30 text-purple-600 dark:text-purple-300 text-xs font-semibold mb-6 animate-fade-in hero-badge">
+        <span class="w-1.5 h-1.5 rounded-full bg-purple-glow"></span>
+        AI-Powered Email Generator
+      </div>
+
+      <h1
+        class="hero-title font-display text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-950 dark:text-white mb-6 mx-auto animate-fade-in max-w-5xl"
+        style="animation-delay: 0.1s">
+        Write Perfect Emails in Seconds<br>with <span
+          id="hero-dynamic-text"
+          class="bg-gradient-to-r from-neon to-purple-glow bg-clip-text text-transparent inline-block">Google Gemini AI</span>
+      </h1>
+
+      <p class="text-slate-700 dark:text-slate-300 text-base sm:text-lg max-w-2xl mx-auto mb-8 leading-relaxed animate-fade-in"
+        style="animation-delay: 0.2s">
+        Ethrix Mail Gen uses Google Gemini AI to craft professional, persuasive, and personalized emails instantly — choose tone, length, language, and let AI handle the rest.
       </p>
-      <button id="save-api-key-btn" class="btn btn-primary btn-full">
-        <span class="btn-text">Launch MailGenius</span>
-        <span class="btn-shine"></span>
-      </button>
+
+      <div class="flex flex-wrap items-center justify-center gap-4 mb-8 animate-fade-in" style="animation-delay: 0.35s">
+        <a href="dashboard.html" class="btn-solid text-sm md:text-base py-3 px-6 rounded-xl">
+          ✨ Generate Email Now
+        </a>
+        <a href="#features"
+          class="btn-neon text-sm md:text-base py-3 px-6 rounded-xl flex items-center gap-2">
+          See Features <i class="fa-solid fa-arrow-down"></i>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto animate-fade-in"
+        style="animation-delay: 0.45s">
+        <div class="glass hero-feature rounded-2xl p-4 text-left">
+          <p class="text-[10px] uppercase tracking-[0.22em] text-neon font-bold mb-2">10 Email Types</p>
+          <p class="text-sm font-semibold text-slate-950 dark:text-white">Professional, Sales, Follow-up, Cold Outreach & more.</p>
+        </div>
+        <div class="glass hero-feature rounded-2xl p-4 text-left">
+          <p class="text-[10px] uppercase tracking-[0.22em] text-purple-glow font-bold mb-2">Tone & Language</p>
+          <p class="text-sm font-semibold text-slate-950 dark:text-white">6 tones, 12 languages, adjustable length & style.</p>
+        </div>
+        <div class="glass hero-feature rounded-2xl p-4 text-left">
+          <p class="text-[10px] uppercase tracking-[0.22em] text-emerald-glow font-bold mb-2">Gemini Powered</p>
+          <p class="text-sm font-semibold text-slate-950 dark:text-white">Gemini 2.0 Flash — fast, smart, and context-aware.</p>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Main App -->
-  <div id="app" class="app hidden">
-    <!-- Header -->
-    <header class="header">
-      <div class="header-left">
-        <div class="logo">
-          <div class="logo-icon">
-            <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
-              <circle cx="24" cy="24" r="24" fill="url(#logo-grad)"/>
-              <defs>
-                <linearGradient id="logo-grad" x1="0" y1="0" x2="48" y2="48">
-                  <stop offset="0%" stop-color="#8B5CF6"/>
-                  <stop offset="100%" stop-color="#06B6D4"/>
-                </linearGradient>
-              </defs>
-              <path d="M24 10L26.5 18H35L28.5 23L31 31L24 26L17 31L19.5 23L13 18H21.5L24 10Z" fill="white" opacity="0.9"/>
-            </svg>
+            </ul>
           </div>
-          <span class="logo-text">Mail<span class="gradient-text">Genius</span></span>
         </div>
-        <span class="powered-badge">Powered by Gemini</span>
       </div>
-      <div class="header-right">
-        <div class="model-selector-wrap">
-          <label class="model-label">Model</label>
-          <select id="model-select" class="model-select">
-            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-            <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-          </select>
-        </div>
-        <button id="change-key-btn" class="btn btn-ghost" title="Change API Key">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-          API Key
-        </button>
+    </div>
+  </section>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       LIVE INTERACTIVE DEMO (CORE)
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <section id="live-demo" class="relative z-10 py-20">
+    <div class="container mx-auto px-4 md:px-8">
+
+      <!-- Section Header -->
+      <div class="text-center max-w-2xl mx-auto mb-12" id="features">
+        <h2 class="text-2xl md:text-3xl font-bold font-display text-slate-900 dark:text-white">AI Email Generator
+          Studio</h2>
+        <p class="text-slate-600 dark:text-slate-400 text-sm mt-3">
+          Fill in your details, choose tone and style, and let Gemini AI craft the perfect email for you — ready to copy and send.
+        </p>
       </div>
-    </header>
 
-    <!-- Main Layout -->
-    <main class="main-layout">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <div class="sidebar-section">
-          <p class="sidebar-label">Email Type</p>
-          <div class="email-type-grid" id="email-type-grid">
-            <button class="type-btn active" data-type="professional" data-prompt="Write a professional business email">
-              <span class="type-icon">💼</span>
-              <span class="type-name">Professional</span>
-            </button>
-            <button class="type-btn" data-type="sales" data-prompt="Write a persuasive sales outreach email">
-              <span class="type-icon">📈</span>
-              <span class="type-name">Sales</span>
-            </button>
-            <button class="type-btn" data-type="follow-up" data-prompt="Write a follow-up email after a meeting or conversation">
-              <span class="type-icon">🔄</span>
-              <span class="type-name">Follow-up</span>
-            </button>
-            <button class="type-btn" data-type="apology" data-prompt="Write a sincere apology email">
-              <span class="type-icon">🙏</span>
-              <span class="type-name">Apology</span>
-            </button>
-            <button class="type-btn" data-type="cold-outreach" data-prompt="Write a compelling cold outreach networking email">
-              <span class="type-icon">🤝</span>
-              <span class="type-name">Cold Outreach</span>
-            </button>
-            <button class="type-btn" data-type="newsletter" data-prompt="Write an engaging marketing newsletter email">
-              <span class="type-icon">📰</span>
-              <span class="type-name">Newsletter</span>
-            </button>
-            <button class="type-btn" data-type="thank-you" data-prompt="Write a heartfelt thank you email">
-              <span class="type-icon">💝</span>
-              <span class="type-name">Thank You</span>
-            </button>
-            <button class="type-btn" data-type="feedback" data-prompt="Write a polite feedback request email">
-              <span class="type-icon">📋</span>
-              <span class="type-name">Feedback</span>
-            </button>
-            <button class="type-btn" data-type="complaint" data-prompt="Write a firm but professional complaint email">
-              <span class="type-icon">⚡</span>
-              <span class="type-name">Complaint</span>
-            </button>
-            <button class="type-btn" data-type="invitation" data-prompt="Write an engaging event invitation email">
-              <span class="type-icon">🎉</span>
-              <span class="type-name">Invitation</span>
-            </button>
-          </div>
-        </div>
+      <div class="max-w-5xl mx-auto">
 
-        <div class="sidebar-section">
-          <p class="sidebar-label">Quick Templates</p>
-          <div class="template-list">
-            <button class="template-item" id="tpl-job-application">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-              Job Application
-            </button>
-            <button class="template-item" id="tpl-partnership">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              Partnership Proposal
-            </button>
-            <button class="template-item" id="tpl-meeting-request">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              Meeting Request
-            </button>
-            <button class="template-item" id="tpl-product-launch">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
-              Product Launch
-            </button>
-          </div>
-        </div>
+        <!-- System API Key Integration -->
 
-        <div class="sidebar-section">
-          <p class="sidebar-label">History</p>
-          <div id="history-list" class="history-list">
-            <p class="history-empty">Generated emails will appear here</p>
-          </div>
-        </div>
-      </aside>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-      <!-- Center: Editor -->
-      <section class="editor-panel">
-        <div class="panel-header">
-          <h1 class="panel-title">Compose with AI</h1>
-          <div class="panel-actions">
-            <button class="btn btn-ghost btn-sm" id="clear-btn">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.48"/></svg>
-              Reset
-            </button>
-          </div>
-        </div>
+          <!-- LEFT: Email Form (7 cols) -->
+          <div class="lg:col-span-7 flex flex-col gap-4">
+            <div class="glass rounded-xl p-5 flex flex-col gap-4">
 
-        <div class="form-grid">
-          <div class="form-row-2">
-            <div class="form-group">
-              <label class="form-label" for="sender-name">Your Name</label>
-              <input type="text" id="sender-name" class="form-input" placeholder="John Smith" />
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="recipient-name">Recipient Name</label>
-              <input type="text" id="recipient-name" class="form-input" placeholder="Jane Doe" />
-            </div>
-          </div>
+              <!-- Window chrome -->
+              <div class="flex items-center gap-2 border-b border-neon-border pb-3">
+                <span class="w-3 h-3 rounded-full bg-rose-glow"></span>
+                <span class="w-3 h-3 rounded-full bg-amber-glow"></span>
+                <span class="w-3 h-3 rounded-full bg-emerald-glow"></span>
+                <span class="text-[10px] font-mono text-slate-500 ml-2">✉️ email-composer.ai</span>
+              </div>
 
-          <div class="form-row-2">
-            <div class="form-group">
-              <label class="form-label" for="recipient-role">Recipient's Role/Company</label>
-              <input type="text" id="recipient-role" class="form-input" placeholder="CEO at Acme Corp" />
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="subject-line">Subject (optional)</label>
-              <input type="text" id="subject-line" class="form-input" placeholder="Leave blank to auto-generate" />
-            </div>
-          </div>
+              <!-- Email Type Pills -->
+              <div>
+                <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">Email Type</p>
+                <div class="flex flex-wrap gap-2" id="demo-type-pills">
+                  <button class="demo-pill active-pill" onclick="selectDemoType(this,'Professional','Write a professional business email')">
+                    💼 Professional</button>
+                  <button class="demo-pill" onclick="selectDemoType(this,'Sales','Write a persuasive sales outreach email')">
+                    📈 Sales</button>
+                  <button class="demo-pill" onclick="selectDemoType(this,'Follow-up','Write a follow-up email after a meeting')">
+                    🔄 Follow-up</button>
+                  <button class="demo-pill" onclick="selectDemoType(this,'Cold Outreach','Write a compelling cold outreach email')">
+                    🤝 Cold Outreach</button>
+                  <button class="demo-pill" onclick="selectDemoType(this,'Thank You','Write a heartfelt thank you email')">
+                    💝 Thank You</button>
+                  <button class="demo-pill" onclick="selectDemoType(this,'Apology','Write a sincere apology email')">
+                    🙏 Apology</button>
+                </div>
+              </div>
 
-          <div class="form-group">
-            <label class="form-label" for="email-context">Email Purpose & Context</label>
-            <textarea
-              id="email-context"
-              class="form-textarea"
-              rows="4"
-              placeholder="Describe the purpose of the email. E.g., 'I want to follow up on the proposal I sent last week and ask for a decision by Friday. Mention that we can offer a 10% discount if they sign this month.'"
-            ></textarea>
-          </div>
+              <!-- Form Fields -->
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Your Name</label>
+                  <input id="demo-sender" type="text" placeholder="John Smith"
+                    class="mt-1 w-full bg-space/60 border border-neon-border text-slate-800 dark:text-slate-200 text-xs rounded-lg px-3 py-2 outline-none focus:border-neon/60 transition-colors" />
+                </div>
+                <div>
+                  <label class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Recipient</label>
+                  <input id="demo-recipient" type="text" placeholder="Jane Doe, CEO at Acme"
+                    class="mt-1 w-full bg-space/60 border border-neon-border text-slate-800 dark:text-slate-200 text-xs rounded-lg px-3 py-2 outline-none focus:border-neon/60 transition-colors" />
+                </div>
+              </div>
 
-          <div class="form-row-3">
-            <div class="form-group">
-              <label class="form-label">Tone</label>
-              <div class="tone-selector" id="tone-selector">
-                <button class="tone-btn active" data-tone="professional">Professional</button>
-                <button class="tone-btn" data-tone="friendly">Friendly</button>
-                <button class="tone-btn" data-tone="persuasive">Persuasive</button>
-                <button class="tone-btn" data-tone="formal">Formal</button>
-                <button class="tone-btn" data-tone="casual">Casual</button>
-                <button class="tone-btn" data-tone="urgent">Urgent</button>
+              <div>
+                <label class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Email Purpose & Context <span class="text-neon">*</span></label>
+                <textarea id="demo-context" rows="3" placeholder="Describe what this email should achieve. E.g. Follow up on last week's proposal, ask for decision by Friday, mention 10% discount if they sign this month."
+                  class="mt-1 w-full bg-space/60 border border-neon-border text-slate-800 dark:text-slate-200 text-xs rounded-lg px-3 py-2 outline-none focus:border-neon/60 transition-colors resize-none"></textarea>
+              </div>
+
+              <!-- Tone + Length -->
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Tone</p>
+                  <div class="flex flex-wrap gap-1.5" id="demo-tone-pills">
+                    <button class="demo-pill active-pill" onclick="selectDemoPill(this,'demo-tone-pills','professional')">Professional</button>
+                    <button class="demo-pill" onclick="selectDemoPill(this,'demo-tone-pills','friendly')">Friendly</button>
+                    <button class="demo-pill" onclick="selectDemoPill(this,'demo-tone-pills','persuasive')">Persuasive</button>
+                    <button class="demo-pill" onclick="selectDemoPill(this,'demo-tone-pills','formal')">Formal</button>
+                    <button class="demo-pill" onclick="selectDemoPill(this,'demo-tone-pills','urgent')">Urgent</button>
+                  </div>
+                </div>
+                <div>
+                  <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Length</p>
+                  <div class="flex gap-1.5" id="demo-len-pills">
+                    <button class="demo-pill" onclick="selectDemoPill(this,'demo-len-pills','brief')">Brief</button>
+                    <button class="demo-pill active-pill" onclick="selectDemoPill(this,'demo-len-pills','standard')">Standard</button>
+                    <button class="demo-pill" onclick="selectDemoPill(this,'demo-len-pills','detailed')">Detailed</button>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div class="form-group">
-              <label class="form-label">Length</label>
-              <div class="length-selector" id="length-selector">
-                <button class="length-btn" data-length="brief">Brief</button>
-                <button class="length-btn active" data-length="standard">Standard</button>
-                <button class="length-btn" data-length="detailed">Detailed</button>
+            <!-- Generate Button -->
+            <button id="demo-gen-btn" onclick="runDemoGenerate()"
+              class="w-full bg-primary text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:opacity-90 active:scale-98"
+              style="background: linear-gradient(135deg,#8B5CF6,#06B6D4); box-shadow: 0 4px 24px rgba(139,92,246,.4);">
+              <i class="fa-solid fa-bolt"></i>
+              <span id="demo-btn-text">Generate Email with Gemini</span>
+            </button>
+          </div>
+
+          <!-- RIGHT: Output Panel (5 cols) -->
+          <div class="lg:col-span-5 flex flex-col gap-4">
+            <div class="glass rounded-xl flex flex-col h-full min-h-[460px] overflow-hidden">
+
+              <!-- Output header -->
+              <div class="flex items-center justify-between border-b border-neon-border bg-space/35 px-4 py-2.5">
+                <div class="flex items-center gap-2 text-xs font-mono">
+                  <span id="demo-status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+                  <span id="demo-output-meta">Ready</span>
+                </div>
+                <button onclick="copyDemoOutput()" id="demo-copy-btn"
+                  class="hidden text-[10px] font-bold text-slate-500 hover:text-neon transition-colors flex items-center gap-1">
+                  <i class="fa-solid fa-copy"></i> Copy
+                </button>
+              </div>
+
+              <!-- Output body -->
+              <div id="demo-output-body" class="flex-1 p-5 overflow-y-auto">
+
+                <!-- Idle -->
+                <div id="demo-idle" class="flex flex-col items-center justify-center h-full gap-3 text-center py-10">
+                  <div style="font-size:2.5rem">✉️</div>
+                  <h3 class="text-sm font-bold text-slate-800 dark:text-slate-300">AI Email Ready</h3>
+                  <p class="text-xs text-slate-500 max-w-[200px]">Fill the form and click Generate to craft your email with Gemini AI.</p>
+                </div>
+
+                <!-- Loading -->
+                <div id="demo-loading" class="hidden flex flex-col items-center justify-center h-full gap-4 text-center py-10">
+                  <div class="neon-spinner-wrap">
+                    <div class="neon-ring neon-ring-1"></div>
+                    <div class="neon-ring neon-ring-2"></div>
+                    <div class="neon-ring neon-ring-3"></div>
+                    <div class="neon-core"></div>
+                  </div>
+                  <div>
+                    <h4 id="demo-loading-text" class="text-xs font-bold text-neon font-mono tracking-widest">GENERATING…</h4>
+                    <p class="text-[10px] text-slate-500 mt-1">Gemini AI is crafting your email</p>
+                  </div>
+                  <div class="w-40 h-[2px] bg-slate-800 rounded-full overflow-hidden">
+                    <div id="demo-progress" class="h-full bg-neon transition-all duration-300" style="width:0%"></div>
+                  </div>
+                </div>
+
+                <!-- Output -->
+                <div id="demo-result" class="hidden">
+                  <div id="demo-subject-wrap" class="hidden mb-3 px-3 py-2 rounded-lg border border-neon-border bg-neon/5 flex items-start gap-2">
+                    <span class="text-[9px] font-bold text-neon uppercase tracking-wider pt-0.5 flex-shrink-0">Subject:</span>
+                    <span id="demo-subject-text" class="text-xs font-semibold text-slate-800 dark:text-slate-200"></span>
+                  </div>
+                  <div id="demo-email-body"
+                    class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap font-sans"></div>
+                </div>
+
+                <!-- Error -->
+                <div id="demo-error" class="hidden flex flex-col items-center justify-center h-full gap-3 text-center py-10">
+                  <div style="font-size:2rem">⚠️</div>
+                  <p class="text-xs font-bold text-red-400">Generation Failed</p>
+                  <p id="demo-error-msg" class="text-[10px] text-slate-500 max-w-[220px]"></p>
+                  <button onclick="runDemoGenerate()" class="btn-neon text-xs px-4 py-2 rounded-lg mt-1">Retry</button>
+                </div>
               </div>
             </div>
-
-            <div class="form-group">
-              <label class="form-label">Language</label>
-              <select id="language-select" class="form-select">
-                <option value="English">English</option>
-                <option value="Spanish">Spanish</option>
-                <option value="French">French</option>
-                <option value="German">German</option>
-                <option value="Portuguese">Portuguese</option>
-                <option value="Italian">Italian</option>
-                <option value="Dutch">Dutch</option>
-                <option value="Japanese">Japanese</option>
-                <option value="Chinese">Chinese (Simplified)</option>
-                <option value="Korean">Korean</option>
-                <option value="Arabic">Arabic</option>
-                <option value="Hindi">Hindi</option>
-              </select>
-            </div>
           </div>
-
-          <div class="form-group">
-            <label class="form-label">Additional Options</label>
-            <div class="checkbox-row">
-              <label class="checkbox-label">
-                <input type="checkbox" id="opt-cta" class="checkbox-input" checked />
-                <span class="checkbox-custom"></span>
-                Include call-to-action
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" id="opt-signature" class="checkbox-input" checked />
-                <span class="checkbox-custom"></span>
-                Add signature
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" id="opt-subject" class="checkbox-input" checked />
-                <span class="checkbox-custom"></span>
-                Generate subject line
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" id="opt-emoji" class="checkbox-input" />
-                <span class="checkbox-custom"></span>
-                Use emojis
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <button id="generate-btn" class="btn btn-generate">
-          <span class="generate-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-            </svg>
-          </span>
-          <span id="generate-btn-text">Generate Email</span>
-          <span class="btn-shine"></span>
-        </button>
-      </section>
-
-      <!-- Right: Output Panel -->
-      <section class="output-panel">
-        <div class="panel-header">
-          <h2 class="panel-title">Generated Email</h2>
-          <div class="panel-actions" id="output-actions">
-            <button class="btn btn-ghost btn-sm" id="copy-btn" disabled>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              Copy
-            </button>
-            <button class="btn btn-ghost btn-sm" id="regenerate-btn" disabled>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-              Regenerate
-            </button>
-            <button class="btn btn-ghost btn-sm" id="improve-btn" disabled>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-              Improve
-            </button>
-          </div>
-        </div>
-
-        <!-- Empty State -->
-        <div id="empty-state" class="empty-state">
-          <div class="empty-icon">
-            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-              <circle cx="32" cy="32" r="32" fill="url(#empty-grad)" opacity="0.15"/>
-              <defs>
-                <linearGradient id="empty-grad" x1="0" y1="0" x2="64" y2="64">
-                  <stop offset="0%" stop-color="#8B5CF6"/>
-                  <stop offset="100%" stop-color="#06B6D4"/>
-                </linearGradient>
-              </defs>
-              <path d="M16 20h32v24H16z" stroke="url(#empty-stroke)" stroke-width="2" fill="none" rx="2"/>
-              <path d="M16 20l16 14 16-14" stroke="url(#empty-stroke2)" stroke-width="2" fill="none"/>
-              <defs>
-                <linearGradient id="empty-stroke" x1="16" y1="20" x2="48" y2="44">
-                  <stop offset="0%" stop-color="#8B5CF6"/>
-                  <stop offset="100%" stop-color="#06B6D4"/>
-                </linearGradient>
-                <linearGradient id="empty-stroke2" x1="16" y1="20" x2="48" y2="34">
-                  <stop offset="0%" stop-color="#8B5CF6"/>
-                  <stop offset="100%" stop-color="#06B6D4"/>
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          <p class="empty-title">Your AI-crafted email will appear here</p>
-          <p class="empty-subtitle">Fill in the form and click <strong>Generate Email</strong> to get started</p>
-          <div class="empty-features">
-            <span class="feature-pill">✨ Context-aware</span>
-            <span class="feature-pill">🎯 Tone control</span>
-            <span class="feature-pill">🌍 12 languages</span>
-          </div>
-        </div>
-
-        <!-- Loading State -->
-        <div id="loading-state" class="loading-state hidden">
-          <div class="loading-orb">
-            <div class="orb-ring ring-1"></div>
-            <div class="orb-ring ring-2"></div>
-            <div class="orb-ring ring-3"></div>
-            <div class="orb-core">
-              <svg width="24" height="24" viewBox="0 0 48 48" fill="none">
-                <path d="M24 10L26.5 18H35L28.5 23L31 31L24 26L17 31L19.5 23L13 18H21.5L24 10Z" fill="url(#orb-grad)"/>
-                <defs>
-                  <linearGradient id="orb-grad" x1="13" y1="10" x2="35" y2="31">
-                    <stop offset="0%" stop-color="#8B5CF6"/>
-                    <stop offset="100%" stop-color="#06B6D4"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-            </div>
-          </div>
-          <p class="loading-text">Crafting your perfect email...</p>
-          <div class="loading-steps">
-            <span class="loading-step active" id="step-1">Analyzing context</span>
-            <span class="loading-step" id="step-2">Crafting content</span>
-            <span class="loading-step" id="step-3">Polishing tone</span>
-          </div>
-        </div>
-
-        <!-- Output Content -->
-        <div id="output-content" class="output-content hidden">
-          <div class="subject-badge-wrap" id="subject-badge-wrap">
-            <span class="subject-label">Subject:</span>
-            <span id="output-subject" class="subject-text"></span>
-            <button class="copy-subject-btn" id="copy-subject-btn" title="Copy subject">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            </button>
-          </div>
-          <div id="output-email" class="output-email" contenteditable="true" spellcheck="true"></div>
-
-          <div class="output-meta">
-            <div class="meta-stats">
-              <span class="meta-stat" id="word-count">0 words</span>
-              <span class="meta-divider">·</span>
-              <span class="meta-stat" id="char-count">0 chars</span>
-              <span class="meta-divider">·</span>
-              <span class="meta-stat" id="read-time">~0 min read</span>
-            </div>
-            <div class="sentiment-badge" id="sentiment-badge"></div>
-          </div>
-        </div>
-
-        <!-- Error State -->
-        <div id="error-state" class="error-state hidden">
-          <div class="error-icon">⚠️</div>
-          <p class="error-title">Generation Failed</p>
-          <p class="error-message" id="error-message">Something went wrong. Please check your API key and try again.</p>
-          <button class="btn btn-ghost" id="retry-btn">Try Again</button>
-        </div>
-      </section>
-    </main>
-
-    <!-- Improve Modal -->
-    <div id="improve-modal" class="modal-overlay">
-      <div class="modal-card modal-sm">
-        <h3 class="modal-title-sm">Improve Email</h3>
-        <p class="modal-subtitle">Describe how you'd like to improve this email</p>
-        <textarea id="improve-instructions" class="form-textarea" rows="3" placeholder="E.g., Make it more concise, add urgency, fix the tone, translate to formal English..."></textarea>
-        <div class="modal-footer">
-          <button class="btn btn-ghost" id="improve-cancel-btn">Cancel</button>
-          <button class="btn btn-primary" id="improve-submit-btn">Apply Improvements</button>
         </div>
       </div>
     </div>
+  </section>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast hidden">
-      <span id="toast-message"></span>
+  <style>
+    .demo-pill {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--muted-foreground);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 11px;
+      cursor: pointer;
+      transition: all 0.18s;
+      font-family: 'Inter', sans-serif;
+    }
+    .demo-pill:hover { border-color: rgba(var(--primary-rgb),.4); color: var(--foreground); }
+    .active-pill {
+      background: linear-gradient(135deg,rgba(139,92,246,.2),rgba(6,182,212,.12));
+      border-color: rgba(139,92,246,.5) !important;
+      color: #A78BFA !important;
+    }
+  </style>
+
+
+  <!-- ══════════════════════════════════
+       HOW IT WORKS
+  ══════════════════════════════════ -->
+  <section class="relative z-10 py-20 bg-space/65">
+    <div class="container mx-auto px-4 md:px-8">
+
+      <!-- Header -->
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <h2 class="text-2xl md:text-3xl font-bold font-display text-slate-900 dark:text-white">How It Works</h2>
+        <p class="text-slate-600 dark:text-slate-400 text-sm mt-3">
+          From blank page to polished email in under 30 seconds — no writing experience needed.
+        </p>
+      </div>
+
+      <!-- Steps -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+
+        <!-- Step 1 -->
+        <div class="glass rounded-xl p-6 flex flex-col justify-between border-l-4 border-l-neon">
+          <div>
+            <div class="text-xs font-bold text-neon font-mono mb-2 uppercase">Step 01</div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-3">Choose & Describe</h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Select your email type (Professional, Sales, Follow-up, etc.), fill in sender & recipient names, and describe what your email should achieve in a few sentences.
+            </p>
+          </div>
+          <div class="flex items-center gap-2 mt-6">
+            <span class="text-[10px] bg-space border border-neon-border px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 font-mono">Email Type</span>
+            <span class="text-[10px] bg-space border border-neon-border px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 font-mono">Context</span>
+            <span class="text-[10px] bg-space border border-neon-border px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 font-mono">Recipient</span>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="glass rounded-xl p-6 flex flex-col justify-between border-l-4 border-l-purple-glow">
+          <div>
+            <div class="text-xs font-bold text-purple-600 dark:text-purple-300 font-mono mb-2 uppercase">Step 02</div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-3">Set Tone & Style</h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Pick your tone (Professional, Friendly, Persuasive, Urgent…), choose length (Brief / Standard / Detailed), language, and toggle options like subject line, CTA, signature, and emojis.
+            </p>
+          </div>
+          <div class="flex items-center gap-2 mt-6">
+            <span class="text-[10px] bg-space border border-neon-border px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 font-mono">Tone</span>
+            <span class="text-[10px] bg-space border border-neon-border px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 font-mono">Length</span>
+            <span class="text-[10px] bg-space border border-neon-border px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 font-mono">Language</span>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="glass rounded-xl p-6 flex flex-col justify-between border-l-4 border-l-amber-glow">
+          <div>
+            <div class="text-xs font-bold text-amber-500 dark:text-amber-300 font-mono mb-2 uppercase">Step 03</div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-3">Generate & Polish</h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Click generate to watch Gemini write your email instantly. Edit directly in the interactive live editor, request direct revisions, and copy or export in one click.
+            </p>
+          </div>
+          <div class="flex items-center gap-2 mt-6">
+            <span class="text-[10px] bg-space border border-neon-border px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 font-mono">Gemini AI</span>
+            <span class="text-[10px] bg-space border border-neon-border px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 font-mono">Live Editor</span>
+            <span class="text-[10px] bg-space border border-neon-border px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 font-mono">One-Click Copy</span>
+          </div>
+        </div>
+
+      </div>
     </div>
+  </section>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       FOOTER
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <footer class="relative z-10 bg-transparent py-10">
+    <div class="container mx-auto px-4 md:px-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+
+        <!-- Logo -->
+        <div class="flex items-center gap-2">
+          <img src="assets/logo.png" class="h-6 w-auto object-contain rounded" alt="Ethrix Mail Gen Logo" />
+          <span class="text-sm font-bold font-mono text-slate-900 dark:text-white">Ethrix Mail Gen</span>
+        </div>
+
+        <!-- Links / Details -->
+        <div class="text-[11px] text-slate-600 dark:text-slate-400 font-mono">
+          Built by <span class="text-slate-800 dark:text-slate-300">Shantanu</span> for Hack Day Event
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Message Element -->
+  <div id="copy-toast"
+    class="fixed bottom-6 right-6 bg-slate-950 border border-neon-border/75 text-neon font-semibold text-xs py-3 px-5 rounded-xl backdrop-blur-md shadow-neon opacity-0 translate-y-6 pointer-events-none transition-all duration-300 z-50">
   </div>
 
-  <script src="app.js"></script>
+  <!-- Load JS file -->
+  <script src="js/main.js?v=1.2"></script>
+
+  <!-- Floating Background Paths Script (GPU-Accelerated Canvas) -->
+  <script>
+    (function () {
+      const canvas = document.getElementById('paths-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      // Fixed coordinates resolution mapping coordinates precisely from the React component
+      canvas.width = 696;
+      canvas.height = 316;
+
+      const pathList = [];
+
+      function generatePathsForPosition(position) {
+        for (let i = 0; i < 36; i++) {
+          const x1 = -(380 - i * 5 * position);
+          const y1 = -(189 + i * 6);
+          const x2 = -(312 - i * 5 * position);
+          const y2 = 216 - i * 6;
+          const x3 = 152 - i * 5 * position;
+          const y3 = 343 - i * 6;
+          const x4 = 616 - i * 5 * position;
+          const y4 = 470 - i * 6;
+          const x5 = 684 - i * 5 * position;
+          const y5 = 875 - i * 6;
+
+          const width = 0.5 + i * 0.03;
+          const baseOpacity = 0.08 + i * 0.025; // slightly reduced for elegance
+          const duration = 20 + Math.random() * 10;
+          const speed = 700 / (duration * 60); // pixels per frame
+          const offsetStart = Math.random() * 1000;
+
+          pathList.push({
+            x1, y1, x2, y2, x3, y3, x4, y4, x5, y5,
+            width,
+            baseOpacity,
+            speed,
+            offset: offsetStart,
+            pulseSpeed: 0.01 + Math.random() * 0.01,
+            pulseTime: Math.random() * Math.PI * 2
+          });
+        }
+      }
+
+      generatePathsForPosition(1);
+      generatePathsForPosition(-1);
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Adjust color palette dynamically per-frame depending on light/dark mode
+        const isDark = document.documentElement.classList.contains('dark');
+        const strokeColor = isDark ? [255, 255, 255] : [15, 23, 42];
+
+        for (let i = 0; i < pathList.length; i++) {
+          const p = pathList[i];
+
+          // Increment offset (scrolls the dash pattern across the bezier curves)
+          p.offset = (p.offset + p.speed) % 1200;
+
+          // Animates opacity oscillation (Framer motion opacity: [0.3, 0.6, 0.3])
+          p.pulseTime += p.pulseSpeed;
+          const pulse = 0.45 + Math.sin(p.pulseTime) * 0.15;
+          const opacity = p.baseOpacity * pulse;
+
+          ctx.strokeStyle = `rgba(${strokeColor[0]}, ${strokeColor[1]}, ${strokeColor[2]}, ${opacity})`;
+          ctx.lineWidth = p.width;
+
+          // setLineDash([dashLength, gapLength])
+          ctx.setLineDash([120, 480]);
+          ctx.lineDashOffset = -p.offset;
+
+          // Draw the bezier curve
+          ctx.beginPath();
+          ctx.moveTo(p.x1, p.y1);
+          ctx.bezierCurveTo(p.x1, p.y1, p.x2, p.y2, p.x3, p.y3);
+          ctx.bezierCurveTo(p.x4, p.y4, p.x5, p.y5, p.x5, p.y5);
+          ctx.stroke();
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      requestAnimationFrame(draw);
+    })();
+  </script>
+
+  <script>
+    function handleOpenDashboard(e) {
+      if (e) e.preventDefault();
+      const savedKey = localStorage.getItem('mailgenius_key');
+      const isDemo = localStorage.getItem('mailgenius_demo') === 'true';
+      if (savedKey || isDemo) {
+        window.location.href = "dashboard.html";
+      } else {
+        window.location.href = "login.html";
+      }
+    }
+
+    // Hero Section Dynamic Ticker Text Changer
+    document.addEventListener("DOMContentLoaded", () => {
+      // Hide page preloader
+      const preloader = document.getElementById('page-preloader');
+      if (preloader) {
+        setTimeout(() => {
+          preloader.classList.add('opacity-0', 'pointer-events-none');
+          setTimeout(() => {
+            preloader.remove();
+          }, 300);
+        }, 500);
+      }
+
+      const phrases = [
+        "Google Gemini AI",
+        "Instant Email Magic",
+        "Perfect Tone & Style",
+        "Professional Emails Fast"
+      ];
+      let phraseIndex = 0;
+      const textEl = document.getElementById("hero-dynamic-text");
+      if (!textEl) return;
+
+      setInterval(() => {
+        // Fade out and slide up
+        textEl.classList.add("ticker-hidden");
+        
+        setTimeout(() => {
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+          textEl.textContent = phrases[phraseIndex];
+          // Fade in and slide up from bottom
+          textEl.classList.remove("ticker-hidden");
+        }, 400); // match CSS transition duration
+      }, 3000);
+    });
+  </script>
+
+  <!-- ── Demo Email Generator JS ─────────────────────── -->
+  <script>
+    // Demo state
+    const demoState = {
+      apiKey: window.GEMINI_API_KEY || localStorage.getItem('mailgenius_key') || '',
+      emailType: 'Professional',
+      emailTypePrompt: 'Write a professional business email',
+      tone: 'professional',
+      length: 'standard',
+      generatedEmail: '',
+      generatedSubject: '',
+      isGenerating: false,
+    };
+
+    const demoDefaultContexts = {
+      Professional: {
+        context: "I am applying for the Software Engineer position at Macromax. I have 5 years of experience in full-stack development using React and Node.js. My resume and portfolio are attached.",
+        tone: "professional"
+      },
+      Sales: {
+        context: "Introduce our automated developer workflow platform that cuts down draft times by 45% using customized templates. Request a 10-minute demo call.",
+        tone: "persuasive"
+      },
+      'Follow-up': {
+        context: "Follow up on our conversation yesterday regarding the project roadmap. Let me know if you have any feedback or if we should sync up.",
+        tone: "friendly"
+      },
+      'Cold Outreach': {
+        context: "Reach out to propose a strategic partnership between our two companies where our product complements their service. Request a brief call.",
+        tone: "persuasive"
+      },
+      'Thank You': {
+        context: "Thank you for the guidance and mentorship during the recent project launch. Your feedback helped us refine our approach.",
+        tone: "friendly"
+      },
+      Apology: {
+        context: "Sincere apology for the unexpected server outage yesterday. Offer a 15% credit on the next invoice to make things right.",
+        tone: "formal"
+      }
+    };
+
+    function selectDemoType(btn, type, prompt) {
+      document.querySelectorAll('#demo-type-pills .demo-pill').forEach(p => p.classList.remove('active-pill'));
+      btn.classList.add('active-pill');
+      demoState.emailType = type;
+      demoState.emailTypePrompt = prompt;
+
+      const tpl = demoDefaultContexts[type];
+      if (tpl) {
+        const input = document.getElementById('demo-context');
+        if (input) input.value = tpl.context;
+
+        if (tpl.tone) {
+          demoState.tone = tpl.tone;
+          document.querySelectorAll('#demo-tone-pills .demo-pill').forEach(p => {
+            const toneVal = p.getAttribute('onclick').match(/'([^']+)'\)/)?.[1] || p.textContent.toLowerCase().trim();
+            p.classList.toggle('active-pill', toneVal === tpl.tone);
+          });
+        }
+      }
+    }
+
+    function selectDemoPill(btn, groupId, value) {
+      document.querySelectorAll('#' + groupId + ' .demo-pill').forEach(p => p.classList.remove('active-pill'));
+      btn.classList.add('active-pill');
+      if (groupId === 'demo-tone-pills') demoState.tone = value;
+      if (groupId === 'demo-len-pills') demoState.length = value;
+    }
+
+    function setDemoPanel(panel) {
+      ['demo-idle','demo-loading','demo-result','demo-error'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+      const show = document.getElementById(panel);
+      if (show) show.classList.remove('hidden');
+    }
+
+    function setDemoStatus(text, color) {
+      const dot = document.getElementById('demo-status-dot');
+      const meta = document.getElementById('demo-output-meta');
+      if (dot) dot.style.background = color;
+      if (meta) meta.textContent = text;
+    }
+
+    function buildDemoPrompt() {
+      const sender    = (document.getElementById('demo-sender')?.value || '').trim() || 'the sender';
+      const recipient = (document.getElementById('demo-recipient')?.value || '').trim() || 'the recipient';
+      const context   = (document.getElementById('demo-context')?.value || '').trim();
+      
+      const lenGuide = {
+        brief: { range: '80–120 words', structure: '1–2 short paragraphs.' },
+        standard: { range: '150–250 words', structure: '2–3 detailed paragraphs. Must feel fully written, realistic, and complete.' },
+        detailed: { range: '250–400 words', structure: '3–4 comprehensive paragraphs, optionally containing clear bullet points for readability.' }
+      }[demoState.length] || { range: '150–250 words', structure: '2–3 detailed paragraphs.' };
+
+      const toneInstruction = {
+        professional: 'professional, respectful, clear, and business-appropriate',
+        friendly: 'warm, welcoming, positive, and polite',
+        persuasive: 'compelling, active, benefit-oriented, and convincing',
+        formal: 'traditional, elegant, highly polite, and strictly structured',
+        urgent: 'prompt, clear, time-sensitive, and actionable'
+      }[demoState.tone] || 'business-appropriate';
+
+      return `You are an expert email copywriter. Your task is to write a high-quality email.
+Type/Topic: ${demoState.emailTypePrompt}
+
+From: ${sender}
+To: ${recipient}
+Purpose & Context: ${context || 'General professional outreach'}
+
+Strict Guidelines:
+1. Tone: Must be ${demoState.tone} (${toneInstruction}).
+2. Length & Structure: Must be within ${lenGuide.range} consisting of ${lenGuide.structure}. Do NOT write a lazy or extremely short summary.
+3. Realistic Details: Write actual plausible details based on the context. Never use placeholders in the main email body. However, DO NOT invent fake employer names or fabricate specific quantitative statistics/percentages unless they are explicitly provided in the context. Describe the situation and details in a strong, realistic, and general professional manner instead. For contact details or signature links, use clearly marked brackets (e.g., '[Your Phone Number]', '[Your Portfolio/LinkedIn]') so the user knows exactly what to edit.
+4. Language: English.
+5. Call-to-Action: Include a clear, polite next step or call-to-action paragraph.
+6. Signature: End the email with a professional sign-off and signature block for "${sender}".
+
+Output Format:
+- Line 1 must be: "SUBJECT: [compelling subject line here]"
+- Line 2 must be a blank line
+- Line 3 onwards must be the email body.
+- Do NOT wrap the output in markdown code blocks (\`\`\`).
+- Do NOT write any introduction or post-explanation.
+- Use natural paragraph spacing (double line breaks between paragraphs).`;
+    }
+
+    async function callDemoGemini(prompt, attempt) {
+      attempt = attempt || 1;
+      const MAX = 3;
+      const model = 'gemini-3.5-flash';
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${demoState.apiKey}`;
+
+      let res;
+      try {
+        res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.85, maxOutputTokens: 8000 }
+          })
+        });
+      } catch(e) { throw new Error('Network error — check your internet connection.'); }
+
+      if (res.status === 429) {
+        if (attempt >= MAX) throw new Error('Rate limit hit. Please wait 1-2 mins and retry.');
+        const wait = attempt * 15;
+        const loadEl = document.getElementById('demo-loading-text');
+        const prog = document.getElementById('demo-progress');
+        for (let i = wait; i >= 0; i--) {
+          if (loadEl) loadEl.textContent = `RATE LIMIT — RETRY IN ${i}s`;
+          if (prog) prog.style.width = ((wait - i) / wait * 100) + '%';
+          await new Promise(r => setTimeout(r, 1000));
+        }
+        return callDemoGemini(prompt, attempt + 1);
+      }
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        const msg = err.error?.message || `HTTP ${res.status}`;
+        if (res.status === 400 || res.status === 403) throw new Error('Invalid API key. Please check and re-enter.');
+        throw new Error(msg);
+      }
+
+      const data = await res.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) throw new Error('Empty response from Gemini. Try again.');
+      return text.trim();
+    }
+
+    function parseDemoEmail(raw) {
+      if (raw.toUpperCase().startsWith('SUBJECT:')) {
+        const lines = raw.split('\n');
+        const subject = lines[0].replace(/^SUBJECT:\s*/i, '').trim();
+        const body = lines.slice(1).join('\n').trimStart();
+        return { subject, body };
+      }
+      return { subject: '', body: raw };
+    }
+
+    async function typeText(el, text) {
+      el.textContent = '';
+      const chars = text.split('');
+      for (let i = 0; i < chars.length;) {
+        for (let b = 0; b < 80 && i < chars.length; b++, i++) el.textContent += chars[i];
+        await new Promise(r => setTimeout(r, 5));
+      }
+    }
+
+    async function runDemoGenerate() {
+      if (demoState.isGenerating) return;
+      if (!demoState.apiKey) {
+        showDemoToast('⚠️ System API key is not configured');
+        return;
+      }
+      const context = document.getElementById('demo-context')?.value?.trim();
+      if (!context) {
+        showDemoToast('✍️ Please describe your email purpose');
+        document.getElementById('demo-context')?.focus();
+        return;
+      }
+
+      demoState.isGenerating = true;
+      const btn = document.getElementById('demo-gen-btn');
+      const btnText = document.getElementById('demo-btn-text');
+      if (btn) btn.disabled = true;
+      if (btnText) btnText.textContent = 'Generating…';
+
+      setDemoPanel('demo-loading');
+      setDemoStatus('Generating…', '#8B5CF6');
+      const prog = document.getElementById('demo-progress');
+      if (prog) { prog.style.width = '0%'; setTimeout(() => { prog.style.width = '60%'; }, 200); }
+
+      try {
+        const prompt = buildDemoPrompt();
+        const raw = await callDemoGemini(prompt);
+        console.log("Raw response from demo Gemini:", raw);
+        const { subject, body } = parseDemoEmail(raw);
+
+        demoState.generatedEmail = body;
+        demoState.generatedSubject = subject;
+
+        if (prog) prog.style.width = '100%';
+        await new Promise(r => setTimeout(r, 300));
+
+        setDemoPanel('demo-result');
+        setDemoStatus('Email ready ✓', '#10B981');
+
+        const subjectWrap = document.getElementById('demo-subject-wrap');
+        const subjectText = document.getElementById('demo-subject-text');
+        if (subject && subjectWrap && subjectText) {
+          subjectWrap.classList.remove('hidden');
+          subjectText.textContent = subject;
+        } else if (subjectWrap) { subjectWrap.classList.add('hidden'); }
+
+        const bodyEl = document.getElementById('demo-email-body');
+        if (bodyEl) await typeText(bodyEl, body);
+
+        const copyBtn = document.getElementById('demo-copy-btn');
+        if (copyBtn) copyBtn.classList.remove('hidden');
+        showDemoToast('✅ Email generated!');
+      } catch (err) {
+        setDemoPanel('demo-error');
+        setDemoStatus('Failed', '#EF4444');
+        const errEl = document.getElementById('demo-error-msg');
+        if (errEl) errEl.textContent = err.message || 'Something went wrong.';
+        showDemoToast('❌ ' + (err.message || 'Error'));
+      } finally {
+        demoState.isGenerating = false;
+        if (btn) btn.disabled = false;
+        if (btnText) btnText.textContent = 'Generate Email with Gemini';
+      }
+    }
+
+    async function copyDemoOutput() {
+      const text = demoState.generatedSubject
+        ? `Subject: ${demoState.generatedSubject}\n\n${demoState.generatedEmail}`
+        : demoState.generatedEmail;
+      try {
+        await navigator.clipboard.writeText(text);
+        showDemoToast('📋 Email copied!');
+      } catch { showDemoToast('❌ Copy failed — select manually'); }
+    }
+
+    function showDemoToast(msg) {
+      const t = document.getElementById('copy-toast');
+      if (!t) return;
+      t.textContent = msg;
+      t.classList.remove('opacity-0','translate-y-6');
+      t.classList.add('opacity-100','translate-y-0');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        t.classList.add('opacity-0','translate-y-6');
+        t.classList.remove('opacity-100','translate-y-0');
+      }, 3000);
+    }
+  </script>
+
 </body>
+
 </html>
